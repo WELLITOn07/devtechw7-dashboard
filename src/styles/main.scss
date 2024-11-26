@@ -1,0 +1,9 @@
+@use "variables" as *;
+@use "mixins" as *;
+@use "reset";
+
+.center {
+  @include flex(column, center, center);
+  height: 100vh;
+  text-align: center;
+}
