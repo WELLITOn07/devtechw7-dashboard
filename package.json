@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "format": "eslint --fix 'src/**/*.{js,ts,vue}' && prettier --write 'src/**/*.{js,ts,vue,scss,css,json,md}'",
+    "format": "prettier --write 'src/**/*.{js,ts,vue,scss,css,json,md}'",
     "start:prod": "npm run format && npm run build && npx serve -s dist"
   },
   "dependencies": {

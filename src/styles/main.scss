@@ -1,5 +1,4 @@
 @use "fonts" as *;
-@use "variables" as *;
 @use "mixins" as *;
 @use "reset" as *;
 
@@ -60,4 +59,14 @@
 /* Para uso rápido de margin padrão */
 .w7-margin {
   margin: 16px;
+}
+
+/* Font title */
+.w7-title {
+  font-size: 40px;
+}
+
+/* Font subtitle */
+.w7-subtitle {
+  font-size: 24px;
 }

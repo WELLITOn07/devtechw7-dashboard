@@ -1,10 +1,9 @@
 <template>
   <div class="login w7-center">
-    <h1 class="montserrat-bold">Login</h1>
+    <h1 class="montserrat-bold w7-title w7-margin">DevTechW7 Dashboard</h1>
     <form
       @submit.prevent="handleLogin"
-      class="login-form w7-column-space-between"
-    >
+      class="login-form w7-column-space-between">
       <div class="form-group w7-full-size">
         <label for="email" class="roboto-regular">Email</label>
         <input
@@ -13,8 +12,7 @@
           v-model="email"
           class="input roboto-regular"
           placeholder="Enter your email"
-          required
-        />
+          required />
       </div>
       <div class="form-group w7-full-size">
         <label for="password" class="roboto-regular">Password</label>
@@ -24,8 +22,7 @@
           v-model="password"
           class="input roboto-regular"
           placeholder="Enter your password"
-          required
-        />
+          required />
       </div>
       <button type="submit" class="btn roboto-medium">Login</button>
     </form>
@@ -69,7 +66,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@use "@/styles/variables.scss" as *;
+@import "../styles/_variables.scss";
 
 .login {
   background-color: $rich-black;
