@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>Home</h1>
+    <h1>Home - {{ env }}</h1>
   </div>
 </template>
 
@@ -10,5 +10,9 @@ import { Options, Vue } from "vue-class-component";
 @Options({
   components: {},
 })
-export default class HomeView extends Vue {}
+export default class HomeView extends Vue {
+  get env() {
+    return process.env.NODE_ENV === "production" ? "Production" : "Development";
+  }
+}
 </script>
