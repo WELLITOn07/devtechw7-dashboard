@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "npm run format && vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "format": "eslint --fix 'src/**/*.{js,ts,vue}' && prettier --write 'src/**/*.{js,ts,vue,scss,css,json,md}'"
+    "format": "prettier --write 'src/**/*.{js,ts,vue,scss,css,json,md}'",
+    "start:prod": "npm run format && npm run build && npx serve -s dist"
   },
   "dependencies": {
+    "axios": "^1.7.8",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",

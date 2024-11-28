@@ -1,9 +1,58 @@
-@use "variables" as *;
+@use "fonts" as *;
 @use "mixins" as *;
-@use "reset";
+@use "reset" as *;
 
-.center {
+.w7-center {
   @include flex(column, center, center);
   height: 100vh;
-  text-align: center;
+}
+
+.w7-horizontal-center {
+  @include flex(row, center, flex-start);
+}
+
+.w7-vertical-center {
+  @include flex(column, flex-start, center);
+}
+
+.w7-space-between {
+  @include flex(row, space-between, center);
+}
+
+.w7-bottom-right {
+  @include flex(row, flex-end, flex-end);
+  height: 100vh;
+}
+
+.w7-top-left {
+  @include flex(row, flex-start, flex-start);
+}
+
+.w7-column-space-between {
+  @include flex(column, space-between, stretch);
+}
+
+.w7-auto-margin {
+  margin: auto;
+}
+
+.w7-full-size {
+  width: 100%;
+  height: 100%;
+}
+
+.w7-padding {
+  padding: 16px;
+}
+
+.w7-margin {
+  margin: 16px;
+}
+
+.w7-title {
+  font-size: 40px;
+}
+
+.w7-subtitle {
+  font-size: 24px;
 }
