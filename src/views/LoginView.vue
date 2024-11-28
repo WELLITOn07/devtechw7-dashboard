@@ -6,8 +6,8 @@
       alt="DevTechW7 Logo"
       class="login-logo montserrat-bold w7-margin" />
     <form
-      @submit.prevent="handleLogin"
-      class="login-form w7-column-space-between">
+      class="login-form w7-column-space-between"
+      @submit.prevent="handleLogin">
       <div class="form-group w7-full-size">
         <label for="email" class="roboto-regular">Email</label>
         <input
@@ -28,10 +28,13 @@
           placeholder="Enter your password"
           required />
       </div>
-      <button type="submit" class="btn roboto-medium">Login</button>
+      <LoadingButton
+        :loading="loading"
+        text="Login"
+        loadingText="Carregando"
+        @click="handleLogin" />
     </form>
 
-    <!-- Dialog Component -->
     <AlertDialog
       v-if="showDialog"
       :title="dialogTitle"
@@ -45,14 +48,17 @@
 import { defineComponent } from "vue";
 import axios from "axios";
 import AlertDialog from "../components/AlertDialog.vue";
+import LoadingButton from "../components/LoadingButton.vue";
+import { LoginResponse } from "@/models/login-responde.model";
 
 export default defineComponent({
   name: "LoginView",
-  components: { AlertDialog },
+  components: { AlertDialog, LoadingButton },
   data() {
     return {
       email: "",
       password: "",
+      loading: false,
       showDialog: false,
       dialogTitle: "",
       dialogMessage: "",
@@ -60,8 +66,11 @@ export default defineComponent({
   },
   methods: {
     async handleLogin() {
+      if (this.loading) return;
+      this.loading = true;
+
       try {
-        const response = await axios.post(
+        const response = await axios.post<LoginResponse>(
           `${process.env.VUE_APP_API_URL}/auth/login`,
           {
             email: this.email,
@@ -69,9 +78,12 @@ export default defineComponent({
           }
         );
 
-        localStorage.setItem("access_token", response.data.access_token);
+        const { access_token, user } = response.data;
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("user", JSON.stringify(user));
+
         this.dialogTitle = "Success";
-        this.dialogMessage = "Login successful!";
+        this.dialogMessage = `Welcome, ${user.name}!`;
         this.showDialog = true;
 
         setTimeout(() => {
@@ -81,7 +93,7 @@ export default defineComponent({
         if (axios.isAxiosError(error)) {
           this.dialogTitle = "Login Error";
           this.dialogMessage =
-            error.response?.data.message[0] ||
+            error.response?.data.message ||
             "Failed to login. Please try again.";
         } else {
           this.dialogTitle = "Unexpected Error";
@@ -89,6 +101,8 @@ export default defineComponent({
             "An unexpected error occurred. Please try again.";
         }
         this.showDialog = true;
+      } finally {
+        this.loading = false;
       }
     },
   },
@@ -143,23 +157,6 @@ export default defineComponent({
     &:focus {
       border-color: $gold;
       outline: none;
-    }
-  }
-
-  .btn {
-    width: 100%;
-    padding: 12px;
-    background-color: $mikado-yellow;
-    border: none;
-    color: $rich-black;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: $gold;
     }
   }
 }

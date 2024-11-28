@@ -2,71 +2,57 @@
 @use "mixins" as *;
 @use "reset" as *;
 
-/* Centraliza conteúdo horizontal e verticalmente */
 .w7-center {
   @include flex(column, center, center);
   height: 100vh;
-  text-align: center;
 }
 
-/* Apenas alinhamento horizontal */
 .w7-horizontal-center {
   @include flex(row, center, flex-start);
 }
 
-/* Apenas alinhamento vertical */
 .w7-vertical-center {
   @include flex(column, flex-start, center);
 }
 
-/* Distribuição de espaço entre itens horizontalmente */
 .w7-space-between {
   @include flex(row, space-between, center);
 }
 
-/* Alinhamento de itens no canto inferior direito */
 .w7-bottom-right {
   @include flex(row, flex-end, flex-end);
   height: 100vh;
 }
 
-/* Alinhamento de itens no canto superior esquerdo */
 .w7-top-left {
   @include flex(row, flex-start, flex-start);
 }
 
-/* Distribuição de itens em colunas com espaçamento */
 .w7-column-space-between {
   @include flex(column, space-between, stretch);
 }
 
-/* Adiciona margens automáticas para centralizar dentro de contêineres */
 .w7-auto-margin {
   margin: auto;
 }
 
-/* Define largura e altura completas */
 .w7-full-size {
   width: 100%;
   height: 100%;
 }
 
-/* Para uso rápido de padding padrão */
 .w7-padding {
   padding: 16px;
 }
 
-/* Para uso rápido de margin padrão */
 .w7-margin {
   margin: 16px;
 }
 
-/* Font title */
 .w7-title {
   font-size: 40px;
 }
 
-/* Font subtitle */
 .w7-subtitle {
   font-size: 24px;
 }

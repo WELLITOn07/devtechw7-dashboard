@@ -2,8 +2,10 @@
   <div v-if="visible" class="dialog-overlay w7-center">
     <div class="dialog-content w7-padding">
       <h3 class="montserrat-bold dialog-title">{{ title }}</h3>
-      <p class="roboto-regular dialog-message">{{ message }}</p>
-      <button class="btn roboto-medium" @click="closeDialog">OK</button>
+      <p class="roboto-regular w7-padding dialog-message">{{ message }}</p>
+      <button class="btn w7-margin roboto-medium" @click="closeDialog">
+        OK
+      </button>
     </div>
   </div>
 </template>
