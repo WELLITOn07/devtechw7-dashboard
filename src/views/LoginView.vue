@@ -1,6 +1,10 @@
 <template>
   <div class="login w7-center">
     <h1 class="montserrat-bold w7-title w7-margin">DevTechW7 Dashboard</h1>
+    <img
+      src="../assets/logo.png"
+      alt="DevTechW7 Logo"
+      class="login-logo montserrat-bold w7-margin" />
     <form
       @submit.prevent="handleLogin"
       class="login-form w7-column-space-between">
@@ -26,19 +30,32 @@
       </div>
       <button type="submit" class="btn roboto-medium">Login</button>
     </form>
+
+    <!-- Dialog Component -->
+    <AlertDialog
+      v-if="showDialog"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      :visible="showDialog"
+      @close="showDialog = false" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios from "axios";
+import AlertDialog from "../components/AlertDialog.vue";
 
 export default defineComponent({
   name: "LoginView",
+  components: { AlertDialog },
   data() {
     return {
       email: "",
       password: "",
+      showDialog: false,
+      dialogTitle: "",
+      dialogMessage: "",
     };
   },
   methods: {
@@ -51,14 +68,27 @@ export default defineComponent({
             password: this.password,
           }
         );
-        alert("Login successful!");
-        console.log("Token:", response.data.token);
+
+        localStorage.setItem("access_token", response.data.access_token);
+        this.dialogTitle = "Success";
+        this.dialogMessage = "Login successful!";
+        this.showDialog = true;
+
+        setTimeout(() => {
+          this.$router.push("/dashboard");
+        }, 2000);
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
+        if (axios.isAxiosError(error)) {
+          this.dialogTitle = "Login Error";
+          this.dialogMessage =
+            error.response?.data.message[0] ||
+            "Failed to login. Please try again.";
         } else {
-          console.error("Unknown error", error);
+          this.dialogTitle = "Unexpected Error";
+          this.dialogMessage =
+            "An unexpected error occurred. Please try again.";
         }
+        this.showDialog = true;
       }
     },
   },
@@ -71,51 +101,66 @@ export default defineComponent({
 .login {
   background-color: $rich-black;
   color: $mikado-yellow;
-  height: 100vh;
-}
+  min-height: 100vh;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-.login h1 {
-  margin-bottom: 24px;
-  color: $gold;
-}
+  & h1 {
+    margin-bottom: 24px;
+    color: $gold;
+    font-size: 2rem;
+  }
 
-.login-form {
-  width: 100%;
-  max-width: 400px;
-}
+  .login-logo {
+    max-width: 120px;
+    margin-bottom: 24px;
+  }
 
-.form-group {
-  margin-bottom: 16px;
-}
+  .login-form {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-.input {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border: 1px solid $yale-blue;
-  border-radius: 4px;
-  background-color: $oxford-blue;
-  color: $mikado-yellow;
-}
+  .form-group {
+    width: 100%;
+  }
 
-.input:focus {
-  border-color: $gold;
-  outline: none;
-}
+  .input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid $yale-blue;
+    border-radius: 4px;
+    background-color: $oxford-blue;
+    color: $mikado-yellow;
 
-.btn {
-  width: 100%;
-  padding: 12px;
-  background-color: $mikado-yellow;
-  border: none;
-  color: $rich-black;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
+    &:focus {
+      border-color: $gold;
+      outline: none;
+    }
+  }
 
-.btn:hover {
-  background-color: $gold;
+  .btn {
+    width: 100%;
+    padding: 12px;
+    background-color: $mikado-yellow;
+    border: none;
+    color: $rich-black;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: $gold;
+    }
+  }
 }
 </style>
