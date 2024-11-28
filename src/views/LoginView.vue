@@ -87,7 +87,7 @@ export default defineComponent({
         this.showDialog = true;
 
         setTimeout(() => {
-          this.$router.push("/dashboard");
+          this.$router.push("/");
         }, 2000);
       } catch (error) {
         if (axios.isAxiosError(error)) {

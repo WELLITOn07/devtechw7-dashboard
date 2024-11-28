@@ -1,18 +1,27 @@
 <template>
   <div class="home">
-    <h1>Home - {{ env }}</h1>
+    <h1 class="montserrat-bold w7-title w7-margin">Applications Dashboard</h1>
+    <ApplicationList />
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { defineComponent } from "vue";
+import ApplicationList from "../components/ApplicationList.vue";
 
-@Options({
-  components: {},
-})
-export default class HomeView extends Vue {
-  get env() {
-    return process.env.NODE_ENV === "production" ? "Production" : "Development";
-  }
-}
+export default defineComponent({
+  name: "HomeView",
+  components: { ApplicationList },
+});
 </script>
+
+<style scoped lang="scss">
+@import "../styles/_variables.scss";
+
+.home {
+  padding: 16px;
+  background-color: $rich-black;
+  color: $mikado-yellow;
+  min-height: 100vh;
+}
+</style>
