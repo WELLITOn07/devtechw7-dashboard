@@ -1,65 +1,61 @@
 <template>
   <div class="application-list">
+    <h1 class="montserrat-bold w7-title w7-margin">Applications Dashboard</h1>
     <div v-if="loading" class="loading">Loading applications...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="applications.length === 0" class="empty-message">
+      No applications found.
+    </div>
     <div v-else class="application-grid">
       <ApplicationCard
         v-for="application in applications"
         :key="application.id"
         :application="application"
-        @click="navigateToApplication(application.name)" />
+        @click="navigateToManage(application.name)" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import axios from "axios";
+import { defineComponent, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useApplicationStore } from "@/store/application";
+import { fetchApplications } from "@/services/applicationService";
 import ApplicationCard from "./ApplicationCard.vue";
-
-interface Application {
-  id: number;
-  name: string;
-  urlOrigin: string;
-  allowedRoles: string[];
-}
+import { Application } from "@/models/application.model";
 
 export default defineComponent({
   name: "ApplicationList",
   components: { ApplicationCard },
-  data() {
-    return {
-      applications: [] as Application[],
-      loading: false,
-      error: "",
-    };
-  },
-  async created() {
-    this.fetchApplications();
-  },
-  methods: {
-    async fetchApplications() {
-      this.loading = true;
-      this.error = "";
+  setup() {
+    const router = useRouter();
+    const applicationStore = useApplicationStore();
+    const applications = ref<Application[]>([]);
+    const loading = ref(true);
+
+    const loadApplications = async () => {
       try {
-        const response = await axios.get<{ data: Application[] }>(
-          `${process.env.VUE_APP_API_URL}/applications`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        );
-        this.applications = response.data.data;
+        loading.value = true;
+        const fetchedApplications = await fetchApplications();
+        applications.value = fetchedApplications; // Show data in view
+        applicationStore.setApplications(fetchedApplications); // Save to store
       } catch (error) {
-        this.error = "Failed to load applications. Please try again.";
+        console.error("Failed to load applications:", error);
       } finally {
-        this.loading = false;
+        loading.value = false;
       }
-    },
-    navigateToApplication(name: string) {
-      this.$router.push(`/application/${name}`);
-    },
+    };
+
+    const navigateToManage = (name: string) => {
+      router.push(`/manage/${name}`);
+    };
+
+    onMounted(loadApplications);
+
+    return {
+      applications,
+      loading,
+      navigateToManage,
+    };
   },
 });
 </script>
@@ -69,7 +65,7 @@ export default defineComponent({
   padding: 16px;
 
   .loading,
-  .error {
+  .empty-message {
     font-size: 1.2rem;
     text-align: center;
     margin: 16px 0;

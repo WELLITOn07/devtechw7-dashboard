@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
-import ApplicationEditView from "@/views/ApplicationEditView.vue";
+import ManageControllersView from "@/views/ManageControllersView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -15,9 +15,9 @@ const routes: Array<RouteRecordRaw> = [
     component: LoginView,
   },
   {
-    path: "/application/:name",
-    name: "application-edit",
-    component: ApplicationEditView,
+    path: "/manage/:name",
+    name: "manage-controllers",
+    component: ManageControllersView,
   },
 ];
 

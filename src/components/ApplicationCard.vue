@@ -1,7 +1,7 @@
 <template>
   <div class="application-card" @click="$emit('click')">
     <h2 class="montserrat-medium app-name">{{ application.name }}</h2>
-    <p class="app-description">{{ application.urlOrigin }}</p>
+    <p class="app-description">{{ application.description }}</p>
     <div class="roles">
       <span
         v-for="role in application.allowedRoles"
@@ -15,13 +15,8 @@
 </template>
 
 <script lang="ts">
+import { Application } from "@/models/application.model";
 import { defineComponent, PropType } from "vue";
-
-interface Application {
-  name: string;
-  urlOrigin: string;
-  allowedRoles: string[];
-}
 
 export default defineComponent({
   name: "ApplicationCard",
@@ -35,11 +30,9 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@import "../styles/_variables.scss";
-
 .application-card {
-  background-color: $oxford-blue;
-  color: $mikado-yellow;
+  background-color: #2e3a59;
+  color: #f5c518;
   padding: 16px;
   border-radius: 8px;
   cursor: pointer;
@@ -58,7 +51,7 @@ export default defineComponent({
   .app-description {
     font-size: 1rem;
     margin-bottom: 16px;
-    color: $gold;
+    color: #f5c518;
   }
 
   .roles {
@@ -70,17 +63,17 @@ export default defineComponent({
       font-size: 0.8rem;
       padding: 4px 8px;
       border-radius: 4px;
-      background-color: $yale-blue;
-      color: $mikado-yellow;
+      background-color: #1b2738;
+      color: #f5c518;
 
       &.admin {
-        background-color: $rich-black;
-        color: $gold;
+        background-color: #ff4c4c;
+        color: #ffffff;
       }
 
       &.moderator {
-        background-color: $gold;
-        color: $rich-black;
+        background-color: #ffd700;
+        color: #1b2738;
       }
     }
   }
