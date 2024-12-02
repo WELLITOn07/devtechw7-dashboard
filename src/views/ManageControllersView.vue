@@ -1,21 +1,22 @@
 <template>
   <div class="manage-view">
-    <h1 class="montserrat-bold w7-title w7-margin">
+    <h1 class="manage-view__title montserrat-bold w7-title w7-margin">
       Manage Controllers for {{ application?.name }}
     </h1>
-    <div v-if="loading" class="loading">Loading application...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-if="loading" class="manage-view__loading">
+      Loading application...
+    </div>
+    <div v-else-if="error" class="manage-view__error">{{ error }}</div>
     <div v-else>
-      <!-- Debug output -->
       <div v-if="application?.controllers?.length">
         <div
-          v-for="controller in application.controllers"
-          :key="controller"
-          class="controller-section">
-          <h3 class="controller-title">{{ controller }}</h3>
+          v-for="(controller, index) in application.controllers"
+          :key="`controller-${index}`"
+          class="manage-view__controller-section">
+          <h3 class="manage-view__controller-title">{{ controller.name }}</h3>
         </div>
       </div>
-      <div v-else class="empty-controllers">
+      <div v-else class="manage-view__empty-controllers">
         No controllers found for this application.
       </div>
     </div>
@@ -75,28 +76,28 @@ export default defineComponent({
   color: $mikado-yellow;
   min-height: 100vh;
 
-  & h1 {
+  &__title {
     margin-bottom: 24px;
     color: $gold;
     font-size: 2rem;
   }
 
-  .loading,
-  .error {
+  &__loading,
+  &__error {
     font-size: 1.2rem;
     text-align: center;
     margin: 16px 0;
   }
 
-  .controller-title {
+  &__controller-title {
     margin-top: 24px;
     font-size: 1.5rem;
     color: $gold;
   }
 
-  .empty-controllers {
+  &__empty-controllers {
     font-size: 1.2rem;
-    color: green;
+    color: $alert-success;
     text-align: center;
     margin-top: 16px;
   }

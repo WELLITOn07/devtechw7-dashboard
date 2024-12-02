@@ -1,11 +1,14 @@
 <template>
   <div class="application-list">
-    <h1 class="montserrat-bold w7-title w7-margin">Applications Dashboard</h1>
-    <div v-if="loading" class="loading">Loading applications...</div>
-    <div v-else-if="applications.length === 0" class="empty-message">
+    <div v-if="loading" class="application-list__loading">
+      Loading applications...
+    </div>
+    <div
+      v-else-if="applications.length === 0"
+      class="application-list__empty-message">
       No applications found.
     </div>
-    <div v-else class="application-grid">
+    <div v-else class="application-list__grid">
       <ApplicationCard
         v-for="application in applications"
         :key="application.id"
@@ -36,8 +39,8 @@ export default defineComponent({
       try {
         loading.value = true;
         const fetchedApplications = await fetchApplications();
-        applications.value = fetchedApplications; // Show data in view
-        applicationStore.setApplications(fetchedApplications); // Save to store
+        applications.value = fetchedApplications;
+        applicationStore.setApplications(fetchedApplications);
       } catch (error) {
         console.error("Failed to load applications:", error);
       } finally {
@@ -62,16 +65,19 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .application-list {
-  padding: 16px;
+  &__title {
+    font-size: 2rem;
+    margin-bottom: 24px;
+  }
 
-  .loading,
-  .empty-message {
+  &__loading,
+  &__empty-message {
     font-size: 1.2rem;
     text-align: center;
     margin: 16px 0;
   }
 
-  .application-grid {
+  &__grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 16px;

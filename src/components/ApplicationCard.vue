@@ -1,13 +1,12 @@
 <template>
   <div class="application-card" @click="$emit('click')">
-    <h2 class="montserrat-medium app-name">{{ application.name }}</h2>
-    <p class="app-description">{{ application.description }}</p>
-    <div class="roles">
-      <span
-        v-for="role in application.allowedRoles"
-        :key="role"
-        class="role"
-        :class="{ admin: role === 'ADMIN', moderator: role === 'MODERATOR' }">
+    <h2 class="application-card__name montserrat-bold">{{ application.name }}</h2>
+    <p class="application-card__description roboto-medium">{{ application.description }}</p>
+    <div class="application-card__roles">
+      <span v-for="role in application.allowedRoles" :key="role" class="application-card__role" :class="{
+          'application-card__roles--admin': role === 'ADMIN',
+          'application-card__roles--moderator': role === 'MODERATOR',
+        }">
         {{ role }}
       </span>
     </div>
@@ -30,51 +29,34 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "../styles/_variables.scss";
+@import "../styles/_mixins.scss";
+
 .application-card {
-  background-color: #2e3a59;
-  color: #f5c518;
-  padding: 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  @include Applicationcard;
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .app-name {
+  &__name {
     font-size: 1.5rem;
     margin-bottom: 8px;
   }
 
-  .app-description {
+  &__description {
     font-size: 1rem;
     margin-bottom: 16px;
-    color: #f5c518;
   }
 
-  .roles {
-    display: flex;
+  &__roles {
+    @include flex;
     flex-wrap: wrap;
     gap: 8px;
+    color: $white;
 
-    .role {
-      font-size: 0.8rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background-color: #1b2738;
-      color: #f5c518;
+    &--admin {
+      @include roleColor($error);
+    }
 
-      &.admin {
-        background-color: #ff4c4c;
-        color: #ffffff;
-      }
-
-      &.moderator {
-        background-color: #ffd700;
-        color: #1b2738;
-      }
+    &--moderator {
+      @include roleColor($warning);
     }
   }
 }

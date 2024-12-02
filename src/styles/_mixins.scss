@@ -1,6 +1,32 @@
-@mixin flex($direction, $justify, $align) {
+@use "variables" as var;
+
+@mixin flex($direction: row, $justify: flex-start, $align: stretch) {
   display: flex;
   flex-direction: $direction;
   justify-content: $justify;
   align-items: $align;
+}
+
+@mixin Applicationcard {
+  background-color: var.$oxford-blue;
+  color: var.$mikado-yellow;
+  padding: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  @include hover-effect;
+}
+
+@mixin hover-effect {
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@mixin roleColor($color) {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: $color;
 }

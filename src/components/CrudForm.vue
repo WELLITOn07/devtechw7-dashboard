@@ -3,16 +3,20 @@
     <div
       v-for="(value, key) in formData"
       :key="key"
-      class="form-group w7-full-size">
-      <label :for="key" class="roboto-regular">{{ key }}</label>
+      class="crud-form__form-group crud-form__form-group--full-size">
+      <label :for="String(key)" class="crud-form__label roboto-regular">
+        {{ key }}
+      </label>
       <input
         type="text"
-        :id="key"
+        :id="String(key)"
         v-model="formData[key]"
-        class="input roboto-regular"
-        :placeholder="key" />
+        class="crud-form__input roboto-regular"
+        :placeholder="String(key)" />
     </div>
-    <button type="submit" class="btn roboto-medium">Save</button>
+    <button type="submit" class="crud-form__button btn roboto-medium">
+      Save
+    </button>
   </form>
 </template>
 
@@ -44,22 +48,26 @@ export default defineComponent({
 @import "../styles/_variables.scss";
 
 .crud-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  .form-group {
+  &__form-group {
     display: flex;
     flex-direction: column;
+
+    &--full-size {
+      width: 100%;
+    }
   }
 
-  .input {
+  &__label {
+    margin-bottom: 8px;
+  }
+
+  &__input {
     padding: 8px;
     border: 1px solid $yale-blue;
     border-radius: 4px;
   }
 
-  .btn {
+  &__button {
     align-self: flex-start;
     padding: 8px 16px;
     background-color: $mikado-yellow;

@@ -1,30 +1,25 @@
 <template>
-  <div class="login w7-center">
-    <h1 class="montserrat-bold w7-title w7-margin">DevTechW7 Dashboard</h1>
-    <img
-      src="../assets/logo.png"
-      alt="DevTechW7 Logo"
-      class="login-logo montserrat-bold w7-margin" />
-    <form
-      class="login-form w7-column-space-between"
-      @submit.prevent="handleLogin">
-      <div class="form-group w7-full-size">
-        <label for="email" class="roboto-regular">Email</label>
+  <div class="login">
+    <h1 class="login__title">DevTechW7 Dashboard</h1>
+    <img src="../assets/logo.png" alt="DevTechW7 Logo" class="login__logo" />
+    <form class="login__form" @submit.prevent="handleLogin">
+      <div class="login__form-group">
+        <label for="email" class="login__label">Email</label>
         <input
           type="email"
           id="email"
           v-model="email"
-          class="input roboto-regular"
+          class="login__input"
           placeholder="Enter your email"
           required />
       </div>
-      <div class="form-group w7-full-size">
-        <label for="password" class="roboto-regular">Password</label>
+      <div class="login__form-group">
+        <label for="password" class="login__label">Password</label>
         <input
           type="password"
           id="password"
           v-model="password"
-          class="input roboto-regular"
+          class="login__input"
           placeholder="Enter your password"
           required />
       </div>
@@ -122,18 +117,18 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
 
-  & h1 {
+  &__title {
     margin-bottom: 24px;
     color: $gold;
     font-size: 2rem;
   }
 
-  .login-logo {
+  &__logo {
     max-width: 120px;
     margin-bottom: 24px;
   }
 
-  .login-form {
+  &__form {
     width: 100%;
     max-width: 400px;
     display: flex;
@@ -141,11 +136,16 @@ export default defineComponent({
     gap: 16px;
   }
 
-  .form-group {
+  &__form-group {
     width: 100%;
   }
 
-  .input {
+  &__label {
+    margin-bottom: 8px;
+    color: $mikado-yellow;
+  }
+
+  &__input {
     width: 100%;
     padding: 12px;
     margin-top: 8px;
