@@ -31,14 +31,14 @@ export default defineComponent({
   name: "AccessRulesForm",
   props: {
     data: {
-      type: Object as PropType<AccessRule>,
+      type: Object as PropType<{ data: AccessRule[] }>,
       required: true,
     },
   },
   data() {
     return {
-      formData: { ...this.data },
-      rolesString: (this.data.allowedRoles || []).join(", "),
+      formData: JSON.parse(JSON.stringify(this.data.data[0] || {})), // Carrega a primeira regra
+      rolesString: (this.data.data[0]?.allowedRoles || []).join(", "),
     };
   },
   methods: {

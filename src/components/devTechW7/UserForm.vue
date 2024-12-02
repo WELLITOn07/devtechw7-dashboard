@@ -58,14 +58,14 @@ export default defineComponent({
   name: "UserForm",
   props: {
     data: {
-      type: Object as PropType<User>,
+      type: Object as PropType<{ data: User[] }>,
       required: true,
     },
   },
   data() {
     return {
-      formData: { ...this.data },
-      rolesString: (this.data.rule || []).join(", "),
+      formData: JSON.parse(JSON.stringify(this.data.data[0] || {})), // Carrega o primeiro usuário
+      rolesString: (this.data.data[0]?.rule || []).join(", "),
     };
   },
   methods: {
