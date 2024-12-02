@@ -1,19 +1,21 @@
 <template>
   <div class="manage-view">
-    <h1 class="manage-view__title montserrat-bold w7-title w7-margin">
+    <h1 class="manage-view__title montserrat-bold w7-title">
       Manage Controllers for {{ application?.name }}
     </h1>
     <div v-if="loading" class="manage-view__loading">
       Loading application...
     </div>
     <div v-else-if="error" class="manage-view__error">{{ error }}</div>
-    <div v-else>
+    <div v-else class="manage-view__controllers">
       <div v-if="controllerData.length">
         <div
           v-for="(controller, index) in controllerData"
           :key="`controller-${index}`"
-          class="manage-view__controller-section">
-          <h3 class="manage-view__controller-title">{{ controller.name }}</h3>
+          class="manage-view__controller">
+          <h3 class="manage-view__controller-title roboto-medium">
+            {{ controller.name }}
+          </h3>
           <CrudForm
             :data="controller.data"
             @save="handleSave(controller.name, $event)" />
@@ -91,12 +93,11 @@ export default defineComponent({
 
     const handleSave = async (controllerName: string, updatedData: string) => {
       try {
-        const parsedData = JSON.parse(updatedData); // Convert the string back to an object
+        const parsedData = JSON.parse(updatedData); 
         console.log(
           `Saving data for controller "${controllerName}":`,
           parsedData
         );
-        // Add logic for saving updated data to the backend
         alert(`Controller "${controllerName}" data saved successfully!`);
       } catch (err) {
         console.error(`Failed to save data for "${controllerName}":`, err);
@@ -114,3 +115,54 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped lang="scss">
+@import "../styles/_variables.scss";
+@import "../styles/_mixins.scss";
+
+.manage-view {
+  padding: 16px;
+  background-color: $rich-black;
+  color: $mikado-yellow;
+  min-height: 100vh;
+
+  &__title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 24px;
+  }
+
+  &__loading,
+  &__error {
+    font-size: 1.2rem;
+    text-align: center;
+    margin: 16px 0;
+  }
+
+  &__controllers {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  &__controller {
+    background-color: $oxford-blue;
+    padding: 16px;
+    border-radius: 8px;
+    @include hover-effect;
+  }
+
+  &__controller-title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: $gold;
+  }
+
+  &__empty-controllers {
+    text-align: center;
+    font-size: 1.2rem;
+    color: $alert-success;
+    margin-top: 24px;
+  }
+}
+</style>
