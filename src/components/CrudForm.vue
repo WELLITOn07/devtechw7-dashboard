@@ -1,18 +1,12 @@
 <template>
   <form @submit.prevent="handleSave" class="crud-form">
-    <div
-      v-for="(value, key) in formData"
-      :key="key"
-      class="crud-form__form-group crud-form__form-group--full-size">
-      <label :for="String(key)" class="crud-form__label roboto-regular">
-        {{ key }}
-      </label>
-      <input
-        type="text"
-        :id="String(key)"
-        v-model="formData[key]"
-        class="crud-form__input roboto-regular"
-        :placeholder="String(key)" />
+    <div class="crud-form__form-group crud-form__form-group--full-size">
+      <label for="data" class="crud-form__label roboto-regular">Data</label>
+      <textarea
+        id="data"
+        v-model="jsonData"
+        class="crud-form__textarea roboto-regular"
+        placeholder="Edit the JSON data here"></textarea>
     </div>
     <button type="submit" class="crud-form__button btn roboto-medium">
       Save
@@ -33,12 +27,12 @@ export default defineComponent({
   },
   data() {
     return {
-      formData: { ...this.data },
+      jsonData: JSON.stringify(this.data, null, 2), // Initialize as JSON string
     };
   },
   methods: {
     handleSave() {
-      this.$emit("save", this.formData);
+      this.$emit("save", this.jsonData); // Emit the JSON string to the parent
     },
   },
 });
@@ -61,10 +55,13 @@ export default defineComponent({
     margin-bottom: 8px;
   }
 
-  &__input {
+  &__textarea {
+    width: 100%;
+    height: 150px;
     padding: 8px;
     border: 1px solid $yale-blue;
     border-radius: 4px;
+    font-family: monospace;
   }
 
   &__button {

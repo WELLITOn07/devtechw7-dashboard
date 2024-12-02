@@ -1,9 +1,17 @@
 <template>
   <div class="application-card" @click="$emit('click')">
-    <h2 class="application-card__name montserrat-bold">{{ application.name }}</h2>
-    <p class="application-card__description roboto-medium">{{ application.description }}</p>
+    <h2 class="application-card__name montserrat-bold">
+      {{ application.name }}
+    </h2>
+    <p class="application-card__description roboto-medium">
+      {{ application.description }}
+    </p>
     <div class="application-card__roles">
-      <span v-for="role in application.allowedRoles" :key="role" class="application-card__role" :class="{
+      <span
+        v-for="role in application.allowedRoles"
+        :key="role"
+        class="application-card__role"
+        :class="{
           'application-card__roles--admin': role === 'ADMIN',
           'application-card__roles--moderator': role === 'MODERATOR',
         }">
