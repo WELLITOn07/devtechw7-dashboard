@@ -1,28 +1,20 @@
 <template>
   <div class="manage-view">
-    <h1 class="manage-view__title montserrat-bold w7-title">
+    <h1 class="manage-view__title montserrat-bold w7-title w7-margin">
       Manage Controllers for {{ application?.name }}
     </h1>
     <div v-if="loading" class="manage-view__loading">
       Loading application...
     </div>
     <div v-else-if="error" class="manage-view__error">{{ error }}</div>
-    <div v-else class="manage-view__controllers">
-      <div v-if="controllerData.length">
-        <div
+    <div v-else>
+      <div>
+        <CrudForm
           v-for="(controller, index) in controllerData"
           :key="`controller-${index}`"
-          class="manage-view__controller">
-          <h3 class="manage-view__controller-title roboto-medium">
-            {{ controller.name }}
-          </h3>
-          <CrudForm
-            :data="controller.data"
-            @save="handleSave(controller.name, $event)" />
-        </div>
-      </div>
-      <div v-else class="manage-view__empty-controllers">
-        No controllers found for this application.
+          :data="controller.data"
+          :name="controller.name"
+          @save="handleSave(controller.name, $event)" />
       </div>
     </div>
   </div>
@@ -91,14 +83,16 @@ export default defineComponent({
       }
     });
 
-    const handleSave = async (controllerName: string, updatedData: string) => {
+    const handleSave = async (
+      controllerName: string,
+      updatedData: Record<string, any>
+    ) => {
       try {
-        const parsedData = JSON.parse(updatedData); 
         console.log(
           `Saving data for controller "${controllerName}":`,
-          parsedData
+          updatedData
         );
-        alert(`Controller "${controllerName}" data saved successfully!`);
+        alert(`Data for controller "${controllerName}" saved successfully!`);
       } catch (err) {
         console.error(`Failed to save data for "${controllerName}":`, err);
         alert(`Failed to save data for "${controllerName}".`);
@@ -118,7 +112,6 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "../styles/_variables.scss";
-@import "../styles/_mixins.scss";
 
 .manage-view {
   padding: 16px;
@@ -137,32 +130,6 @@ export default defineComponent({
     font-size: 1.2rem;
     text-align: center;
     margin: 16px 0;
-  }
-
-  &__controllers {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
-  }
-
-  &__controller {
-    background-color: $oxford-blue;
-    padding: 16px;
-    border-radius: 8px;
-    @include hover-effect;
-  }
-
-  &__controller-title {
-    font-size: 1.5rem;
-    margin-bottom: 16px;
-    color: $gold;
-  }
-
-  &__empty-controllers {
-    text-align: center;
-    font-size: 1.2rem;
-    color: $alert-success;
-    margin-top: 24px;
   }
 }
 </style>
