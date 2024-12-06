@@ -1,25 +1,36 @@
 <template>
   <form @submit.prevent="handleSave" class="access-rules-form w7-padding">
     <h3 class="form__title w7-subtitle montserrat-medium">Access Rules Form</h3>
-    <div class="form__group">
-      <label for="urlOrigin" class="form__label">URL Origin</label>
-      <input
-        type="text"
-        id="urlOrigin"
-        v-model="formData.urlOrigin"
-        class="form__input"
-        placeholder="Enter URL Origin" />
+    <div v-for="(rule, index) in formData" :key="index" class="form__section">
+      <div class="form__group">
+        <label :for="'urlOrigin-' + index" class="form__label__index">
+          Access Rule {{ index + 1 }}
+        </label>
+      </div>
+      <div class="form__group">
+        <label :for="'urlOrigin-' + index" class="form__label">
+          URL Origin
+        </label>
+        <input
+          type="text"
+          :id="'urlOrigin-' + index"
+          v-model="rule.urlOrigin"
+          class="form__input"
+          placeholder="Enter URL Origin" />
+      </div>
+      <div class="form__group">
+        <label :for="'allowedRoles-' + index" class="form__label">
+          Allowed Roles
+        </label>
+        <input
+          type="text"
+          :id="'allowedRoles-' + index"
+          v-model="rolesStrings[index]"
+          class="form__input"
+          placeholder="Comma-separated Roles" />
+      </div>
     </div>
-    <div class="form__group">
-      <label for="allowedRoles" class="form__label">Allowed Roles</label>
-      <input
-        type="text"
-        id="allowedRoles"
-        v-model="rolesString"
-        class="form__input"
-        placeholder="Comma-separated Roles" />
-    </div>
-    <button type="submit" class="form__button btn w7-padding">Save</button>
+    <button type="submit" class="form__button btn w7-padding">Save All</button>
   </form>
 </template>
 
@@ -37,15 +48,17 @@ export default defineComponent({
   },
   data() {
     return {
-      formData: JSON.parse(JSON.stringify(this.data.data[0] || {})), // Carrega a primeira regra
-      rolesString: (this.data.data[0]?.allowedRoles || []).join(", "),
+      formData: JSON.parse(JSON.stringify(this.data.data)), // Clona os dados
+      rolesStrings: this.data.data.map((rule) => rule.allowedRoles.join(", ")),
     };
   },
   methods: {
     handleSave() {
-      this.formData.allowedRoles = this.rolesString
-        .split(",")
-        .map((r) => r.trim());
+      this.formData.forEach((rule: AccessRule, index: number) => {
+        rule.allowedRoles = this.rolesStrings[index]
+          .split(",")
+          .map((r) => r.trim());
+      });
       this.$emit("save", this.formData);
     },
   },
@@ -61,11 +74,22 @@ export default defineComponent({
   gap: 16px;
   background-color: $oxford-blue;
   border-radius: 8px;
+  padding: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
   .form__title {
-    color: $mikado-yellow;
+    color: $white;
     margin-bottom: 12px;
+  }
+
+  .form__section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid $yale-blue;
+    border-radius: 8px;
+    background-color: $rich-black;
   }
 
   .form__group {
@@ -77,10 +101,13 @@ export default defineComponent({
       font-size: 14px;
       font-weight: bold;
       color: $white;
+
+      &__index {
+        color: $mikado-yellow;
+      }
     }
 
     .form__input {
-      width: 100%;
       padding: 10px;
       border-radius: 4px;
       border: 1px solid $yale-blue;

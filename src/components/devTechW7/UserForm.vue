@@ -1,52 +1,63 @@
 <template>
-  <form @submit.prevent="handleSave" class="user-form w7-padding">
-    <h3 class="form__title w7-subtitle montserrat-medium">User Form</h3>
-    <div class="form__group">
-      <label for="email" class="form__label">Email</label>
-      <input
-        type="email"
-        id="email"
-        v-model="formData.email"
-        class="form__input"
-        placeholder="Enter Email" />
+  <form @submit.prevent="handleSaveAll" class="application-form w7-padding">
+    <h3 class="form__title w7-subtitle montserrat-medium">Users Form</h3>
+    <div v-for="(user, index) in formData" :key="index" class="form__section">
+      <div class="form__group">
+        <label :for="'user-name-' + index" class="form__label__index">
+          User {{ index + 1 }}
+        </label>
+      </div>
+      <div class="form__group">
+        <label :for="'user-email-' + index" class="form__label">Email</label>
+        <input
+          type="email"
+          :id="'user-email-' + index"
+          v-model="user.email"
+          class="form__input"
+          placeholder="Enter Email" />
+      </div>
+      <div class="form__group">
+        <label :for="'user-name-' + index" class="form__label">Name</label>
+        <input
+          type="text"
+          :id="'user-name-' + index"
+          v-model="user.name"
+          class="form__input"
+          placeholder="Enter Name" />
+      </div>
+      <div class="form__group">
+        <label :for="'user-password-' + index" class="form__label">
+          Password
+        </label>
+        <input
+          type="password"
+          :id="'user-password-' + index"
+          v-model="user.password"
+          class="form__input"
+          placeholder="Enter Password" />
+      </div>
+      <div class="form__group">
+        <label :for="'user-birthAt-' + index" class="form__label">
+          Birth Date
+        </label>
+        <input
+          type="date"
+          :id="'user-birthAt-' + index"
+          v-model="user.birthAt"
+          class="form__input"
+          placeholder="Enter Birth Date" />
+      </div>
+      <div class="form__group">
+        <label :for="'user-rule-' + index" class="form__label">Roles</label>
+        <input
+          type="text"
+          :id="'user-rule-' + index"
+          v-model="rolesStrings[index]"
+          class="form__input"
+          placeholder="Comma-separated Roles" />
+      </div>
     </div>
-    <div class="form__group">
-      <label for="name" class="form__label">Name</label>
-      <input
-        type="text"
-        id="name"
-        v-model="formData.name"
-        class="form__input"
-        placeholder="Enter Name" />
-    </div>
-    <div class="form__group">
-      <label for="password" class="form__label">Password</label>
-      <input
-        type="password"
-        id="password"
-        v-model="formData.password"
-        class="form__input"
-        placeholder="Enter Password" />
-    </div>
-    <div class="form__group">
-      <label for="birthAt" class="form__label">Birth Date</label>
-      <input
-        type="date"
-        id="birthAt"
-        v-model="formData.birthAt"
-        class="form__input"
-        placeholder="Enter Birth Date" />
-    </div>
-    <div class="form__group">
-      <label for="rule" class="form__label">Roles</label>
-      <input
-        type="text"
-        id="rule"
-        v-model="rolesString"
-        class="form__input"
-        placeholder="Comma-separated Roles" />
-    </div>
-    <button type="submit" class="form__button btn w7-padding">Save</button>
+    <button type="submit" class="form__button btn w7-padding">Save All</button>
   </form>
 </template>
 
@@ -55,7 +66,7 @@ import { defineComponent, PropType } from "vue";
 import { User } from "@/models/devtechw7.model";
 
 export default defineComponent({
-  name: "UserForm",
+  name: "UsersForm",
   props: {
     data: {
       type: Object as PropType<{ data: User[] }>,
@@ -64,14 +75,17 @@ export default defineComponent({
   },
   data() {
     return {
-      formData: JSON.parse(JSON.stringify(this.data.data[0] || {})), // Carrega o primeiro usuário
-      rolesString: (this.data.data[0]?.rule || []).join(", "),
+      formData: JSON.parse(JSON.stringify(this.data.data)), // Clona os dados dos usuários
+      rolesStrings: this.data.data.map((user) => (user.rule || []).join(", ")),
     };
   },
   methods: {
-    handleSave() {
-      this.formData.rule = this.rolesString.split(",").map((r) => r.trim());
-      this.$emit("save", this.formData);
+    handleSaveAll() {
+      // Atualiza os roles no formato correto antes de salvar
+      this.formData.forEach((user: User, index: number) => {
+        user.rule = this.rolesStrings[index].split(",").map((r) => r.trim());
+      });
+      this.$emit("save", this.formData); // Emite todos os usuários atualizados
     },
   },
 });
@@ -80,17 +94,28 @@ export default defineComponent({
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
 
-.user-form {
+.application-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
   background-color: $oxford-blue;
   border-radius: 8px;
+  padding: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
   .form__title {
-    color: $mikado-yellow;
+    color: $white;
     margin-bottom: 12px;
+  }
+
+  .form__section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid $yale-blue;
+    border-radius: 8px;
+    background-color: $rich-black;
   }
 
   .form__group {
@@ -102,10 +127,13 @@ export default defineComponent({
       font-size: 14px;
       font-weight: bold;
       color: $white;
+
+      &__index {
+        color: $mikado-yellow;
+      }
     }
 
     .form__input {
-      width: 100%;
       padding: 10px;
       border-radius: 4px;
       border: 1px solid $yale-blue;
