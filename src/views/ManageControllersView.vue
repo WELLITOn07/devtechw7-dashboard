@@ -17,6 +17,12 @@
           @save="handleSave(controller.name, $event)" />
       </div>
     </div>
+    <AlertDialog
+      v-if="showDialog"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      :visible="showDialog"
+      @close="showDialog = false" />
   </div>
 </template>
 
@@ -27,10 +33,12 @@ import { useApplicationStore } from "@/store/application";
 import { Application } from "@/models/application.model";
 import { fetchControllerData } from "@/services/controllerService";
 import CrudForm from "@/components/CrudForm.vue";
+import AlertDialog from "@/components/AlertDialog.vue";
+import axios from "axios";
 
 export default defineComponent({
   name: "ManageControllersView",
-  components: { CrudForm },
+  components: { CrudForm, AlertDialog },
   setup() {
     const route = useRoute();
     const applicationStore = useApplicationStore();
@@ -40,6 +48,9 @@ export default defineComponent({
     );
     const loading = ref(true);
     const error = ref("");
+    const dialogTitle = ref("");
+    const dialogMessage = ref("");
+    const showDialog = ref(false);
 
     onMounted(async () => {
       const applicationName = route.params.name as string;
@@ -57,14 +68,12 @@ export default defineComponent({
         application.value = selectedApplication;
 
         if (application.value?.controllers) {
-          console.log("Fetching data for controllers...");
           for (const controller of application.value.controllers) {
             try {
               const data = await fetchControllerData(String(controller));
               controllerData.value.push({ name: String(controller), data });
-              console.log(`Fetched data for controller:`, data);
             } catch (controllerError) {
-              console.error(
+              console.warn(
                 `Failed to fetch data for controller "${controller}":`,
                 controllerError
               );
@@ -74,7 +83,6 @@ export default defineComponent({
           console.warn("Controllers not found in application.");
         }
       } catch (err) {
-        console.error(err);
         error.value = `Error: ${
           err instanceof Error ? err.message : "Unknown error."
         }`;
@@ -88,14 +96,44 @@ export default defineComponent({
       updatedData: Record<string, any>
     ) => {
       try {
-        console.log(
-          `Saving data for controller "${controllerName}":`,
-          updatedData
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          throw new Error("Authentication token is missing.");
+        }
+
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_URL}/${controllerName}`,
+          updatedData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        alert(`Data for controller "${controllerName}" saved successfully!`);
-      } catch (err) {
-        console.error(`Failed to save data for "${controllerName}":`, err);
-        alert(`Failed to save data for "${controllerName}".`);
+
+        if (response.status === 200 || response.status === 201) {
+          dialogTitle.value = "Success";
+          dialogMessage.value = `Data for controller "${controllerName}" saved successfully!`;
+          showDialog.value = true;
+        } else {
+          throw new Error(
+            `Unexpected response: ${response.status} - ${response.statusText}`
+          );
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          dialogTitle.value = "Error Saving Data";
+          dialogMessage.value =
+            error.response?.data.message ||
+            `Failed to save data for "${controllerName}". Please try again.`;
+        } else {
+          dialogTitle.value = "Unexpected Error";
+          dialogMessage.value =
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred. Please try again.";
+        }
+        showDialog.value = true;
       }
     };
 
@@ -104,6 +142,9 @@ export default defineComponent({
       controllerData,
       loading,
       error,
+      dialogTitle,
+      dialogMessage,
+      showDialog,
       handleSave,
     };
   },

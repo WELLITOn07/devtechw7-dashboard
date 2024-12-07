@@ -48,7 +48,7 @@ export default defineComponent({
   },
   data() {
     return {
-      formData: JSON.parse(JSON.stringify(this.data.data)), // Clona os dados
+      formData: JSON.parse(JSON.stringify(this.data.data)),
       rolesStrings: this.data.data.map((rule) => rule.allowedRoles.join(", ")),
     };
   },

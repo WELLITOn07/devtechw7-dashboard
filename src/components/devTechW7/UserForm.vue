@@ -75,17 +75,16 @@ export default defineComponent({
   },
   data() {
     return {
-      formData: JSON.parse(JSON.stringify(this.data.data)), // Clona os dados dos usuários
+      formData: JSON.parse(JSON.stringify(this.data.data)),
       rolesStrings: this.data.data.map((user) => (user.rule || []).join(", ")),
     };
   },
   methods: {
     handleSaveAll() {
-      // Atualiza os roles no formato correto antes de salvar
       this.formData.forEach((user: User, index: number) => {
         user.rule = this.rolesStrings[index].split(",").map((r) => r.trim());
       });
-      this.$emit("save", this.formData); // Emite todos os usuários atualizados
+      this.$emit("save", this.formData);
     },
   },
 });

@@ -26,7 +26,7 @@ export default defineComponent({
   components: { ApplicationForm, AccessRulesForm, UserForm },
   props: {
     data: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as PropType<any>,
       required: true,
     },
     name: {
