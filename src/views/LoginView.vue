@@ -108,7 +108,7 @@ export default defineComponent({
 @import "../styles/_variables.scss";
 
 .login {
-  background-color: $rich-black;
+  background-color: $black;
   color: $mikado-yellow;
   min-height: 100vh;
   padding: 16px;

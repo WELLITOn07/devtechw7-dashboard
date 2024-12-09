@@ -64,6 +64,7 @@ export default defineComponent({
     }
 
     &--moderator {
+      color: $black;
       @include roleColor($warning);
     }
   }

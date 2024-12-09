@@ -114,7 +114,7 @@ export default defineComponent({
     padding: 16px;
     border: 1px solid $yale-blue;
     border-radius: 8px;
-    background-color: $rich-black;
+    background-color: $black;
   }
 
   .form__group {
@@ -136,14 +136,14 @@ export default defineComponent({
       padding: 10px;
       border-radius: 4px;
       border: 1px solid $yale-blue;
-      background-color: $rich-black;
+      background-color: $black;
       color: $white;
     }
   }
 
   .form__button {
     background-color: $mikado-yellow;
-    color: $rich-black;
+    color: $black;
     border: none;
     cursor: pointer;
     font-weight: bold;

@@ -156,7 +156,7 @@ export default defineComponent({
 
 .manage-view {
   padding: 16px;
-  background-color: $rich-black;
+  background-color: $black;
   color: $mikado-yellow;
   min-height: 100vh;
 
