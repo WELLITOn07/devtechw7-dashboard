@@ -1,9 +1,9 @@
 <template>
-  <form @submit.prevent="handleSaveAll" class="application-form w7-padding">
+  <form @submit.prevent="handleSaveAll" class="users-form w7-padding">
     <h3 class="form__title w7-subtitle montserrat-medium">Users Form</h3>
     <div v-for="(user, index) in formData" :key="index" class="form__section">
       <div class="form__group">
-        <label :for="'user-name-' + index" class="form__label__index">
+        <label :for="'user-email-' + index" class="form__label__index">
           User {{ index + 1 }}
         </label>
       </div>
@@ -56,17 +56,43 @@
           class="form__input"
           placeholder="Comma-separated Roles" />
       </div>
+      <button
+        type="button"
+        class="form__button btn btn-danger"
+        @click="removeUser(index, user.id)">
+        Remove User
+      </button>
     </div>
-    <button type="submit" class="form__button btn w7-padding">Save All</button>
+    <div class="form__actions w7-column-space-between">
+      <button
+        type="button"
+        class="form__button btn btn-primary"
+        @click="addUser">
+        Add User
+      </button>
+      <button type="submit" class="form__button btn btn-success">
+        Save All
+      </button>
+    </div>
+
+    <AlertDialog
+      v-if="showDialog"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      :visible="showDialog"
+      @close="showDialog = false" />
   </form>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import { User } from "@/models/devtechw7.model";
+import AlertDialog from "@/components/AlertDialog.vue";
+import { deleteUser } from "@/services/usersService";
 
 export default defineComponent({
   name: "UsersForm",
+  components: { AlertDialog },
   props: {
     data: {
       type: Object as PropType<{ data: User[] }>,
@@ -79,12 +105,58 @@ export default defineComponent({
       rolesStrings: this.data.data.map((user) => (user.rule || []).join(", ")),
     };
   },
+  setup() {
+    const dialogTitle = ref("");
+    const dialogMessage = ref("");
+    const showDialog = ref(false);
+
+    return {
+      dialogTitle,
+      dialogMessage,
+      showDialog,
+    };
+  },
   methods: {
     handleSaveAll() {
       this.formData.forEach((user: User, index: number) => {
-        user.rule = this.rolesStrings[index].split(",").map((r) => r.trim());
+        user.rule = this.rolesStrings[index]
+          .split(",")
+          .map((role) => role.trim());
       });
       this.$emit("save", this.formData);
+    },
+    addUser() {
+      this.formData.push({
+        email: "",
+        name: "",
+        password: "",
+        birthAt: "",
+        rule: [],
+      });
+      this.rolesStrings.push("");
+    },
+    async removeUser(index: number, id: number | undefined) {
+      if (!id) {
+        this.dialogTitle = "Error";
+        this.dialogMessage = "Cannot delete unsaved user.";
+        this.showDialog = true;
+        return;
+      }
+
+      try {
+        await deleteUser(id);
+        this.formData.splice(index, 1);
+        this.rolesStrings.splice(index, 1);
+
+        this.dialogTitle = "Success";
+        this.dialogMessage = "User deleted successfully!";
+        this.showDialog = true;
+      } catch (error) {
+        this.dialogTitle = "Error";
+        this.dialogMessage =
+          error instanceof Error ? error.message : "Failed to delete user.";
+        this.showDialog = true;
+      }
     },
   },
 });
@@ -92,8 +164,9 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
+@import "@/styles/_mixins.scss";
 
-.application-form {
+.users-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -142,15 +215,44 @@ export default defineComponent({
   }
 
   .form__button {
-    background-color: $mikado-yellow;
-    color: $black;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
 
-    &:hover {
-      background-color: $gold;
+    &.btn-primary {
+      background-color: $primary;
+      color: $white;
+
+      &:hover {
+        background-color: darken($primary, 10%);
+      }
+    }
+
+    &.btn-success {
+      background-color: $success;
+      color: $white;
+
+      &:hover {
+        background-color: darken($success, 10%);
+      }
+    }
+
+    &.btn-danger {
+      background-color: $error;
+      color: $white;
+
+      &:hover {
+        background-color: darken($error, 10%);
+      }
+    }
+  }
+
+  .form__actions {
+    @include flex(column, flex-start, center);
+    gap: 16px;
+
+    button {
+      width: 100%;
     }
   }
 }

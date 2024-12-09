@@ -84,8 +84,8 @@
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
 import { Application } from "@/models/application.model";
-import { deleteApplication } from "@/services/applicationService";
 import AlertDialog from "@/components/AlertDialog.vue";
+import { deleteApplication } from "@/services/ApplicationService";
 
 export default defineComponent({
   name: "ApplicationForm",

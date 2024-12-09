@@ -29,17 +29,43 @@
           class="form__input"
           placeholder="Comma-separated Roles" />
       </div>
+      <button
+        type="button"
+        class="form__button btn btn-danger"
+        @click="removeAccessRule(index, rule.id)">
+        Remove Rule
+      </button>
     </div>
-    <button type="submit" class="form__button btn w7-padding">Save All</button>
+    <div class="form__actions w7-column-space-between">
+      <button
+        type="button"
+        class="form__button btn btn-primary"
+        @click="addAccessRule">
+        Add Rule
+      </button>
+      <button type="submit" class="form__button btn btn-success">
+        Save All
+      </button>
+    </div>
+
+    <AlertDialog
+      v-if="showDialog"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      :visible="showDialog"
+      @close="showDialog = false" />
   </form>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import { AccessRule } from "@/models/devtechw7.model";
+import AlertDialog from "@/components/AlertDialog.vue";
+import { deleteAccessRule } from "@/services/AccessRuleService";
 
 export default defineComponent({
   name: "AccessRulesForm",
+  components: { AlertDialog },
   props: {
     data: {
       type: Object as PropType<{ data: AccessRule[] }>,
@@ -52,6 +78,17 @@ export default defineComponent({
       rolesStrings: this.data.data.map((rule) => rule.allowedRoles.join(", ")),
     };
   },
+  setup() {
+    const dialogTitle = ref("");
+    const dialogMessage = ref("");
+    const showDialog = ref(false);
+
+    return {
+      dialogTitle,
+      dialogMessage,
+      showDialog,
+    };
+  },
   methods: {
     handleSave() {
       this.formData.forEach((rule: AccessRule, index: number) => {
@@ -61,12 +98,45 @@ export default defineComponent({
       });
       this.$emit("save", this.formData);
     },
+    addAccessRule() {
+      this.formData.push({
+        urlOrigin: "",
+        allowedRoles: [],
+      });
+      this.rolesStrings.push("");
+    },
+    async removeAccessRule(index: number, id: number | undefined) {
+      if (!id) {
+        this.dialogTitle = "Error";
+        this.dialogMessage = "Cannot delete unsaved rule.";
+        this.showDialog = true;
+        return;
+      }
+
+      try {
+        await deleteAccessRule(id);
+
+        this.formData.splice(index, 1);
+        this.rolesStrings.splice(index, 1);
+        this.dialogTitle = "Success";
+        this.dialogMessage = "Access rule deleted successfully!";
+        this.showDialog = true;
+      } catch (error) {
+        this.dialogTitle = "Error";
+        this.dialogMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to delete access rule.";
+        this.showDialog = true;
+      }
+    },
   },
 });
 </script>
 
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
+@import "@/styles/_mixins.scss";
 
 .access-rules-form {
   display: flex;
@@ -117,15 +187,44 @@ export default defineComponent({
   }
 
   .form__button {
-    background-color: $mikado-yellow;
-    color: $black;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
 
-    &:hover {
-      background-color: $gold;
+    &.btn-primary {
+      background-color: $primary;
+      color: $white;
+
+      &:hover {
+        background-color: darken($primary, 10%);
+      }
+    }
+
+    &.btn-success {
+      background-color: $success;
+      color: $white;
+
+      &:hover {
+        background-color: darken($success, 10%);
+      }
+    }
+
+    &.btn-danger {
+      background-color: $error;
+      color: $white;
+
+      &:hover {
+        background-color: darken($error, 10%);
+      }
+    }
+  }
+
+  .form__actions {
+    @include flex(column, flex-start, center);
+    gap: 16px;
+
+    button {
+      width: 100%;
     }
   }
 }

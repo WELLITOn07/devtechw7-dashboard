@@ -22,7 +22,7 @@
 import { defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useApplicationStore } from "@/store/application";
-import { fetchApplications } from "@/services/applicationService";
+import { fetchApplications } from "@/services/ApplicationService";
 import ApplicationCard from "./ApplicationCard.vue";
 import { Application } from "@/models/application.model";
 

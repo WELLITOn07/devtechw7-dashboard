@@ -31,7 +31,7 @@ import { defineComponent, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useApplicationStore } from "@/store/application";
 import { Application } from "@/models/application.model";
-import { fetchControllerData } from "@/services/controllerService";
+import { fetchControllerData } from "@/services/ControllerService";
 import CrudForm from "@/components/CrudForm.vue";
 import AlertDialog from "@/components/AlertDialog.vue";
 import axios from "axios";
