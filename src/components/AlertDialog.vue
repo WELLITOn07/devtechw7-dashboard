@@ -3,9 +3,7 @@
     <div class="dialog-content w7-padding">
       <h3 class="montserrat-bold dialog-title">{{ title }}</h3>
       <p class="roboto-regular w7-padding dialog-message">{{ message }}</p>
-      <button class="btn w7-margin roboto-medium" @click="closeDialog">
-        OK
-      </button>
+      <button class="btn roboto-medium" @click="closeDialog">OK</button>
     </div>
   </div>
 </template>

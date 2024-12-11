@@ -14,7 +14,8 @@
           :id="'user-email-' + index"
           v-model="user.email"
           class="form__input"
-          placeholder="Enter Email" />
+          placeholder="Enter Email"
+          :disabled="!!user.id" />
       </div>
       <div class="form__group">
         <label :for="'user-name-' + index" class="form__label">Name</label>
@@ -44,8 +45,7 @@
           type="date"
           :id="'user-birthAt-' + index"
           v-model="user.birthAt"
-          class="form__input"
-          placeholder="Enter Birth Date" />
+          class="form__input" />
       </div>
       <div class="form__group">
         <label :for="'user-rule-' + index" class="form__label">Roles</label>
@@ -56,12 +56,21 @@
           class="form__input"
           placeholder="Comma-separated Roles" />
       </div>
-      <button
-        type="button"
-        class="form__button btn btn-danger"
-        @click="removeUser(index, user.id)">
-        Remove User
-      </button>
+      <div class="form__actions w7-row-space-between">
+        <button
+          type="button"
+          class="form__button btn btn-danger"
+          @click="removeUser(index, user.id)">
+          Remove User
+        </button>
+        <button
+          type="button"
+          class="form__button btn btn-primary"
+          @click="handleUpdateUser(user, index)"
+          :disabled="!user.id">
+          Update User
+        </button>
+      </div>
     </div>
     <div class="form__actions w7-column-space-between">
       <button
@@ -87,8 +96,8 @@
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
 import AlertDialog from "@/components/AlertDialog.vue";
-import { deleteUser } from "@/services/usersService";
 import { User } from "@/models/user.model";
+import { saveUsers, updateUser, deleteUser } from "@/services/usersService";
 
 export default defineComponent({
   name: "UsersForm",
@@ -117,13 +126,50 @@ export default defineComponent({
     };
   },
   methods: {
-    handleSaveAll() {
+    async handleSaveAll() {
+      const newUsers: User[] = [];
+      debugger;
       this.formData.forEach((user: User, index: number) => {
         user.rule = this.rolesStrings[index]
           .split(",")
           .map((role) => role.trim());
+
+        if (!user.id) {
+          newUsers.push(user);
+        }
       });
-      this.$emit("save", this.formData);
+
+      try {
+        if (newUsers.length > 0) {
+          await saveUsers(newUsers);
+          this.dialogMessage = `${newUsers.length} user(s) created successfully!`;
+        }
+      } catch (error) {
+        console.error("Failed to save users:", error);
+        this.dialogMessage = "Failed to save some users. Please try again.";
+      }
+
+      this.showDialog = true;
+    },
+    async handleUpdateUser(user: User, index: number) {
+      try {
+        user.rule = this.rolesStrings[index]
+          .split(",")
+          .map((role) => role.trim());
+
+        const payload: Partial<User> & { id: number } = {
+          ...user,
+          id: user.id,
+        };
+        await updateUser(payload);
+
+        this.dialogMessage = `User ${user.email} updated successfully!`;
+      } catch (error) {
+        console.error("Failed to update user:", error);
+        this.dialogMessage = "Failed to update user. Please try again.";
+      }
+
+      this.showDialog = true;
     },
     addUser() {
       this.formData.push({
@@ -137,9 +183,8 @@ export default defineComponent({
     },
     async removeUser(index: number, id: number | undefined) {
       if (!id) {
-        this.dialogTitle = "Error";
-        this.dialogMessage = "Cannot delete unsaved user.";
-        this.showDialog = true;
+        this.formData.splice(index, 1);
+        this.rolesStrings.splice(index, 1);
         return;
       }
 
@@ -148,15 +193,13 @@ export default defineComponent({
         this.formData.splice(index, 1);
         this.rolesStrings.splice(index, 1);
 
-        this.dialogTitle = "Success";
         this.dialogMessage = "User deleted successfully!";
-        this.showDialog = true;
       } catch (error) {
-        this.dialogTitle = "Error";
-        this.dialogMessage =
-          error instanceof Error ? error.message : "Failed to delete user.";
-        this.showDialog = true;
+        console.error("Failed to delete user:", error);
+        this.dialogMessage = "Failed to delete user.";
       }
+
+      this.showDialog = true;
     },
   },
 });
@@ -211,6 +254,11 @@ export default defineComponent({
       border: 1px solid $yale-blue;
       background-color: $black;
       color: $white;
+
+      &.form__textarea {
+        height: 80px;
+        resize: none;
+      }
     }
   }
 
@@ -248,11 +296,11 @@ export default defineComponent({
   }
 
   .form__actions {
-    @include flex(column, flex-start, center);
+    @include flex(row, flex-start, center);
     gap: 16px;
 
     button {
-      width: 100%;
+      width: auto;
     }
   }
 }
