@@ -62,7 +62,7 @@ export default defineComponent({
   padding: 12px;
   background-color: $mikado-yellow;
   border: none;
-  color: $rich-black;
+  color: $black;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;

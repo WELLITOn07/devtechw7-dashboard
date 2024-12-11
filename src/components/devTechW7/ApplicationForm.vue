@@ -53,17 +53,43 @@
           class="form__input"
           placeholder="Comma-separated Allowed Roles" />
       </div>
+      <button
+        type="button"
+        class="form__button btn btn-danger"
+        @click="removeApplication(index, application.id)">
+        Remove Application
+      </button>
     </div>
-    <button type="submit" class="form__button btn w7-padding">Save All</button>
+    <div class="form__actions w7-column-space-between">
+      <button
+        type="button"
+        class="form__button btn btn-primary"
+        @click="addApplication">
+        Add Application
+      </button>
+      <button type="submit" class="form__button btn btn-success">
+        Save All
+      </button>
+    </div>
+
+    <AlertDialog
+      v-if="showDialog"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      :visible="showDialog"
+      @close="showDialog = false" />
   </form>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import { Application } from "@/models/application.model";
+import AlertDialog from "@/components/AlertDialog.vue";
+import { deleteApplication } from "@/services/ApplicationService";
 
 export default defineComponent({
   name: "ApplicationForm",
+  components: { AlertDialog },
   props: {
     data: {
       type: Object as PropType<{ data: Application[] }>,
@@ -72,13 +98,24 @@ export default defineComponent({
   },
   data() {
     return {
-      formData: JSON.parse(JSON.stringify(this.data.data)), // Cria uma cópia editável
+      formData: JSON.parse(JSON.stringify(this.data.data)),
       controllersStrings: this.data.data.map((app) =>
         app.controllers.join(", ")
       ),
       allowedRolesStrings: this.data.data.map((app) =>
         app.allowedRoles.join(", ")
       ),
+    };
+  },
+  setup() {
+    const dialogTitle = ref("");
+    const dialogMessage = ref("");
+    const showDialog = ref(false);
+
+    return {
+      dialogTitle,
+      dialogMessage,
+      showDialog,
     };
   },
   methods: {
@@ -93,12 +130,49 @@ export default defineComponent({
       });
       this.$emit("save", this.formData);
     },
+    addApplication() {
+      this.formData.push({
+        name: "",
+        description: "",
+        controllers: [],
+        allowedRoles: [],
+      });
+      this.controllersStrings.push("");
+      this.allowedRolesStrings.push("");
+    },
+    async removeApplication(index: number, id: number | undefined) {
+      if (!id) {
+        this.dialogTitle = "Error";
+        this.dialogMessage = "Cannot delete unsaved application.";
+        this.showDialog = true;
+        return;
+      }
+
+      try {
+        await deleteApplication(id);
+        this.formData.splice(index, 1);
+        this.controllersStrings.splice(index, 1);
+        this.allowedRolesStrings.splice(index, 1);
+
+        this.dialogTitle = "Success";
+        this.dialogMessage = "Application deleted successfully!";
+        this.showDialog = true;
+      } catch (error) {
+        this.dialogTitle = "Error";
+        this.dialogMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to delete application.";
+        this.showDialog = true;
+      }
+    },
   },
 });
 </script>
 
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
+@import "@/styles/_mixins.scss";
 
 .application-form {
   display: flex;
@@ -121,7 +195,7 @@ export default defineComponent({
     padding: 16px;
     border: 1px solid $yale-blue;
     border-radius: 8px;
-    background-color: $rich-black;
+    background-color: $black;
   }
 
   .form__group {
@@ -143,7 +217,7 @@ export default defineComponent({
       padding: 10px;
       border-radius: 4px;
       border: 1px solid $yale-blue;
-      background-color: $rich-black;
+      background-color: $black;
       color: $white;
 
       &.form__textarea {
@@ -154,15 +228,44 @@ export default defineComponent({
   }
 
   .form__button {
-    background-color: $mikado-yellow;
-    color: $rich-black;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
 
-    &:hover {
-      background-color: $gold;
+    &.btn-primary {
+      background-color: $primary;
+      color: $white;
+
+      &:hover {
+        background-color: darken($primary, 10%);
+      }
+    }
+
+    &.btn-success {
+      background-color: $success;
+      color: $white;
+
+      &:hover {
+        background-color: darken($success, 10%);
+      }
+    }
+
+    &.btn-danger {
+      background-color: $error;
+      color: $white;
+
+      &:hover {
+        background-color: darken($error, 10%);
+      }
+    }
+  }
+
+  .form__actions {
+    @include flex(column, flex-start, center);
+    gap: 16px;
+
+    button {
+      width: 100%;
     }
   }
 }
