@@ -31,3 +31,18 @@ export async function deleteApplication(id: number): Promise<void> {
     },
   });
 }
+
+export async function createApplication(
+  application: Application
+): Promise<void> {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    throw new Error("Authentication token is missing.");
+  }
+
+  await axios.post(`${process.env.VUE_APP_API_URL}/applications`, application, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}

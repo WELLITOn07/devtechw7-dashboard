@@ -1,12 +1,12 @@
+import { BaseModel } from "./base-model.model";
+
 export interface Controller {
   name: string;
 }
 
-export interface Application {
-  id: number;
+export interface Application extends BaseModel {
   name: string;
   description: string;
-  urlOrigin: string;
+  controllers: string[];
   allowedRoles: string[];
-  controllers: Controller[];
 }

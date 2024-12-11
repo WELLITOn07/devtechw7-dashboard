@@ -86,9 +86,9 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
-import { User } from "@/models/devtechw7.model";
 import AlertDialog from "@/components/AlertDialog.vue";
 import { deleteUser } from "@/services/usersService";
+import { User } from "@/models/user.model";
 
 export default defineComponent({
   name: "UsersForm",
