@@ -3,10 +3,11 @@
     <div v-if="loading" class="application-list__loading">
       Loading applications...
     </div>
-    <div
-      v-else-if="applications.length === 0"
-      class="application-list__empty-message">
-      No applications found.
+    <div v-else-if="!applications" class="application-list__empty">
+      <h3>No applications found.</h3>
+      <ApplicationForm
+        :data="{ data: [] }"
+        @save="handleCreateNewApplication" />
     </div>
     <div v-else class="application-list__grid">
       <ApplicationCard
@@ -23,12 +24,16 @@ import { defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useApplicationStore } from "@/store/application";
 import { fetchApplications } from "@/services/ApplicationService";
-import ApplicationCard from "./ApplicationCard.vue";
+import ApplicationCard from "@/components/ApplicationCard.vue";
+import ApplicationForm from "@/components/devTechW7/ApplicationForm.vue";
 import { Application } from "@/models/application.model";
 
 export default defineComponent({
   name: "ApplicationList",
-  components: { ApplicationCard },
+  components: {
+    ApplicationCard,
+    ApplicationForm,
+  },
   setup() {
     const router = useRouter();
     const applicationStore = useApplicationStore();
@@ -52,12 +57,39 @@ export default defineComponent({
       router.push(`/manage/${name}`);
     };
 
+    const handleCreateNewApplication = async (
+      newApplications: Application[]
+    ) => {
+      try {
+        for (const app of newApplications) {
+          const response = await fetch(
+            `${process.env.VUE_APP_API_URL}/applications`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+              body: JSON.stringify(app),
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to create application.");
+          }
+        }
+        await loadApplications();
+      } catch (error) {
+        console.error("Error creating new application:", error);
+      }
+    };
+
     onMounted(loadApplications);
 
     return {
       applications,
       loading,
       navigateToManage,
+      handleCreateNewApplication,
     };
   },
 });
@@ -65,16 +97,20 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .application-list {
-  &__title {
-    font-size: 2rem;
-    margin-bottom: 24px;
-  }
-
-  &__loading,
-  &__empty-message {
+  &__loading {
     font-size: 1.2rem;
     text-align: center;
     margin: 16px 0;
+  }
+
+  &__empty {
+    text-align: center;
+    margin: 16px;
+
+    h3 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
   }
 
   &__grid {
