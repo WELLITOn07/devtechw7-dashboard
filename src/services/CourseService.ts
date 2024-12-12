@@ -37,3 +37,10 @@ export async function updateCourse(
   );
   return response.data.data;
 }
+
+export async function deleteCourse(courseId: string): Promise<void> {
+  await axios.delete(
+    `${process.env.VUE_APP_API_URL}/courses/${courseId}`,
+    getAuthHeaders()
+  );
+}

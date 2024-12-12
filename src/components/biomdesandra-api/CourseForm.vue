@@ -10,18 +10,38 @@
     <div v-else>
       <div
         v-for="(course, courseIndex) in formData"
-        :key="course.id || courseIndex"
+        :key="courseIndex"
         class="form__section">
         <h3 class="form__label__index">Course {{ courseIndex + 1 }}</h3>
 
         <!-- Course Details -->
         <div class="form__group">
+          <label :for="'id-' + courseIndex" class="form__label">ID</label>
+          <input
+            v-model="course.id"
+            :id="'id-' + courseIndex"
+            type="text"
+            class="form__input"
+            placeholder="Enter ID"
+            required />
+        </div>
+        <div class="form__group">
           <label :for="'title-' + courseIndex" class="form__label">Title</label>
           <input
             v-model="course.title"
             :id="'title-' + courseIndex"
+            type="text"
             class="form__input"
             placeholder="Enter title" />
+        </div>
+        <div class="form__group">
+          <label :for="'type-' + courseIndex" class="form__label">Type</label>
+          <input
+            v-model="course.type"
+            :id="'type-' + courseIndex"
+            type="text"
+            class="form__input"
+            placeholder="Enter type" />
         </div>
         <div class="form__group">
           <label :for="'description-' + courseIndex" class="form__label">
@@ -30,16 +50,18 @@
           <textarea
             v-model="course.description"
             :id="'description-' + courseIndex"
+            type="text"
             class="form__input form__textarea"
             placeholder="Enter description"></textarea>
         </div>
         <div class="form__group">
           <label :for="'cover-' + courseIndex" class="form__label">Cover</label>
           <input
-            v-model="course.cover"
+            v-model="course.id"
             :id="'cover-' + courseIndex"
+            type="string"
             class="form__input"
-            placeholder="Enter cover image URL" />
+            disabled />
         </div>
         <div class="form__group">
           <label :for="'link-' + courseIndex" class="form__label">
@@ -48,6 +70,7 @@
           <input
             v-model="course.link"
             :id="'link-' + courseIndex"
+            type="string"
             class="form__input"
             placeholder="Enter course link" />
         </div>
@@ -60,6 +83,7 @@
           <input
             v-model="course.price.original"
             :id="'price-original-' + courseIndex"
+            type="number"
             class="form__input"
             placeholder="Enter original price" />
         </div>
@@ -70,6 +94,7 @@
           <input
             v-model="course.price.discounted"
             :id="'price-discounted-' + courseIndex"
+            type="number"
             class="form__input"
             placeholder="Enter discounted price" />
         </div>
@@ -79,17 +104,19 @@
           <h4 class="form__label__index">Subjects</h4>
           <div
             v-for="(subject, subjectIndex) in course.subjects"
-            :key="subject.id || subjectIndex"
+            :key="subjectIndex"
             class="form__group">
             <label class="form__label">Category</label>
             <input
               v-model="subject.category"
+              type="text"
               class="form__input"
               placeholder="Enter category" />
 
             <label class="form__label">Topics</label>
             <textarea
               v-model="subject.topicsString"
+              type="text"
               class="form__input form__textarea"
               placeholder="Enter topics, separated by commas"
               @input="updateTopicsArray(subject)"></textarea>
@@ -114,17 +141,19 @@
           <h4 class="form__label__index">Works</h4>
           <div
             v-for="(work, workIndex) in course.works"
-            :key="work.id || workIndex"
+            :key="workIndex"
             class="form__group">
             <label class="form__label">Title</label>
             <input
               v-model="work.title"
+              type="text"
               class="form__input"
               placeholder="Enter work title" />
 
             <label class="form__label">URL</label>
             <input
               v-model="work.url"
+              type="string"
               class="form__input"
               placeholder="Enter work URL" />
 
@@ -140,6 +169,17 @@
             class="form__button btn btn-secondary"
             @click="addWork(courseIndex)">
             Add Work
+          </button>
+        </div>
+        <div class="form__actions w7-column-space-between">
+          <button
+            type="button"
+            class="form__button btn btn-danger"
+            @click="removeCourse(course.id, courseIndex)">
+            Delete Course
+          </button>
+          <button type="submit" class="form__button btn btn-success">
+            Save All
           </button>
         </div>
       </div>
@@ -163,9 +203,10 @@
 import { defineComponent } from "vue";
 import { Course, Subject } from "@/models/biomedsandra-api.model";
 import {
+  fetchCourses,
   createCourse,
   updateCourse,
-  fetchCourses,
+  deleteCourse,
 } from "@/services/CourseService";
 
 export default defineComponent({
@@ -173,6 +214,7 @@ export default defineComponent({
   data() {
     return {
       formData: [] as Course[],
+      existingCourseIds: new Set<string>(),
     };
   },
   async mounted() {
@@ -188,26 +230,32 @@ export default defineComponent({
           topicsString: subject.topics.join(", "),
         })),
       }));
+      this.existingCourseIds = new Set(courses.map((course) => course.id));
     },
     async handleSaveAll() {
       for (const course of this.formData) {
+        course.price = {
+          original: String(course.price.original),
+          discounted: String(course.price.discounted),
+        };
         course.subjects = course.subjects.map((subject) => ({
           ...subject,
           topics: subject.topicsString
             ? subject.topicsString.split(",").map((t) => t.trim())
             : [],
         }));
-        if (course.id) {
+        if (this.existingCourseIds.has(course.id)) {
           await updateCourse(course.id, course);
         } else {
-          await createCourse(course);
+          const createdCourse = await createCourse(course);
+          this.existingCourseIds.add(createdCourse.id);
         }
       }
       await this.loadCourses();
     },
     addCourse() {
       this.formData.push({
-        id: null,
+        id: "",
         title: "",
         description: "",
         cover: "",
@@ -220,31 +268,39 @@ export default defineComponent({
     },
     addSubject(courseIndex: number) {
       this.formData[courseIndex].subjects.push({
-        id: null,
         category: "",
         topics: [],
         topicsString: "",
-        courseId: null,
       });
     },
     removeSubject(courseIndex: number, subjectIndex: number) {
       this.formData[courseIndex].subjects.splice(subjectIndex, 1);
     },
+    updateTopicsArray(subject: Subject) {
+      subject.topics = subject.topicsString
+        ? subject.topicsString.split(",").map((t) => t.trim())
+        : [];
+    },
     addWork(courseIndex: number) {
       this.formData[courseIndex].works.push({
-        id: null,
         title: "",
         url: "",
-        courseId: null,
       });
     },
     removeWork(courseIndex: number, workIndex: number) {
       this.formData[courseIndex].works.splice(workIndex, 1);
     },
-    updateTopicsArray(subject: Subject) {
-      subject.topics = subject.topicsString
-        ? subject.topicsString.split(",").map((t) => t.trim())
-        : [];
+    async removeCourse(courseId: string, courseIndex: number) {
+      if (this.existingCourseIds.has(courseId)) {
+        try {
+          await deleteCourse(courseId);
+          this.existingCourseIds.delete(courseId);
+        } catch (error) {
+          console.error(`Failed to delete course with ID ${courseId}:`, error);
+          return;
+        }
+      }
+      this.formData.splice(courseIndex, 1);
     },
   },
 });
