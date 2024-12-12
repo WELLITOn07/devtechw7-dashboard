@@ -83,7 +83,7 @@
           <input
             v-model="course.price.original"
             :id="'price-original-' + courseIndex"
-            type="number"
+            type="text"
             class="form__input"
             placeholder="Enter original price" />
         </div>
@@ -94,7 +94,7 @@
           <input
             v-model="course.price.discounted"
             :id="'price-discounted-' + courseIndex"
-            type="number"
+            type="text"
             class="form__input"
             placeholder="Enter discounted price" />
         </div>
@@ -177,9 +177,6 @@
             class="form__button btn btn-danger"
             @click="removeCourse(course.id, courseIndex)">
             Delete Course
-          </button>
-          <button type="submit" class="form__button btn btn-success">
-            Save All
           </button>
         </div>
       </div>
