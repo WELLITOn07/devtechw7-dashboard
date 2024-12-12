@@ -1,12 +1,12 @@
 export interface Subject {
-  id: number | null; // Permite null para novos subjects
+  id: number | null;
   category: string;
   topics: string[];
   courseId: string;
 }
 
 export interface Work {
-  id: number | null; // Permite null para novos works
+  id: number | null;
   title: string;
   url: string;
   courseId: string;

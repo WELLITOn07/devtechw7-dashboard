@@ -1,11 +1,7 @@
 <template>
-  <div class="course-form">
-    <h1>{{ data.name }}</h1>
-    <h3 v-if="!data.data.length">Create a New Course</h3>
-    <h3>Course: {{ data }}</h3>
-
-    <!-- <form @submit.prevent="handleSave"></form> -->
-  </div>
+    <div v-if="data.data.length === 0" class="course-form__empty">
+      <h3>Create a New Course</h3>
+    </div>
 </template>
 
 <script lang="ts">
@@ -16,55 +12,47 @@ export default defineComponent({
   name: "CourseForm",
   props: {
     data: {
-      type: Object as PropType<any>,
+      type: Object as PropType<{ name: string; data: Course[] }>,
       required: true,
     },
   },
   data() {
-    // return {
-    //   formData: {
-    //     ...this.data,
-    //     subjects: this.data.subjects.map((subject) => ({
-    //       ...subject,
-    //       topicsString: subject.topics.join(", "),
-    //     })),
-    //     works: [...this.data.works],
-    //   },
-    // };
+    return {
+      formData: JSON.parse(JSON.stringify(this.data.data)),
+      subjectsStrings: this.data.data.map((course) =>
+        course.subjects.join(", ")
+      ),
+      worksStrings: this.data.data.map((course) => course.works.join(", ")),
+    };
   },
-  // methods: {
-  //   handleSave() {
-  //     // Format subjects before emitting
-  //     this.formData.subjects = this.formData.subjects.map((subject) => ({
-  //       ...subject,
-  //       topics: subject.topicsString.split(",").map((topic) => topic.trim()),
-  //     }));
-  //     this.$emit("save", this.formData);
-  //   },
-  //   addSubject() {
-  //     this.formData.subjects.push({
-  //       id: null,
-  //       category: "",
-  //       topics: [],
-  //       topicsString: "",
-  //       courseId: this.formData.id,
-  //     });
-  //   },
-  //   removeSubject(index: number) {
-  //     this.formData.subjects.splice(index, 1);
-  //   },
-  //   addWork() {
-  //     this.formData.works.push({
-  //       id: null,
-  //       title: "",
-  //       url: "",
-  //       courseId: this.formData.id,
-  //     });
-  //   },
-  //   removeWork(index: number) {
-  //     this.formData.works.splice(index, 1);
-  //   },
-  // },
+  methods: {
+    handleSave() {
+      this.$emit("save", this.formData);
+    },
+    addSubject() {
+      this.formData.subjects.push({
+        id: null,
+        category: "",
+        topics: [],
+        topicsString: "",
+        courseId: this.formData.id,
+      });
+    },
+    removeSubject(index: number) {
+      this.formData.subjects.splice(index, 1);
+    },
+    addWork() {
+      this.formData.works.push({
+        id: null,
+        title: "",
+        url: "",
+        courseId: this.formData.id,
+      });
+    },
+    removeWork(index: number) {
+      this.formData.works.splice(index, 1);
+    },
+  },
 });
 </script>
 
