@@ -1,15 +1,23 @@
 import { Application } from "@/models/application.model";
 import axios from "axios";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    throw new Error("Authentication token is missing.");
+  }
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+}
+
 export async function fetchApplications(): Promise<Application[]> {
   try {
     const response = await fetch(
       `${process.env.VUE_APP_API_URL}/applications`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }
+      getAuthHeaders()
     );
     const result = await response.json();
     return result.data;
@@ -20,29 +28,18 @@ export async function fetchApplications(): Promise<Application[]> {
 }
 
 export async function deleteApplication(id: number): Promise<void> {
-  const token = localStorage.getItem("access_token");
-  if (!token) {
-    throw new Error("Authentication token is missing.");
-  }
-
-  await axios.delete(`${process.env.VUE_APP_API_URL}/applications/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await axios.delete(
+    `${process.env.VUE_APP_API_URL}/applications/${id}`,
+    getAuthHeaders()
+  );
 }
 
 export async function createApplication(
   application: Application
 ): Promise<void> {
-  const token = localStorage.getItem("access_token");
-  if (!token) {
-    throw new Error("Authentication token is missing.");
-  }
-
-  await axios.post(`${process.env.VUE_APP_API_URL}/applications`, application, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await axios.post(
+    `${process.env.VUE_APP_API_URL}/applications`,
+    application,
+    getAuthHeaders()
+  );
 }

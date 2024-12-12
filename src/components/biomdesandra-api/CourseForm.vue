@@ -1,96 +1,348 @@
 <template>
-    <div v-if="data.data.length === 0" class="course-form__empty">
-      <h3>Create a New Course</h3>
+  <form @submit.prevent="handleSaveAll" class="course-form w7-padding">
+    <h3 class="form__title w7-subtitle montserrat-medium">Course Form</h3>
+    <div v-if="formData.length === 0" class="form__section">
+      <h3 class="form__label__index">No Courses Found</h3>
+      <button class="form__button btn btn-primary" @click="addCourse">
+        Add New Course
+      </button>
     </div>
+    <div v-else>
+      <div
+        v-for="(course, courseIndex) in formData"
+        :key="course.id || courseIndex"
+        class="form__section">
+        <h3 class="form__label__index">Course {{ courseIndex + 1 }}</h3>
+
+        <!-- Course Details -->
+        <div class="form__group">
+          <label :for="'title-' + courseIndex" class="form__label">Title</label>
+          <input
+            v-model="course.title"
+            :id="'title-' + courseIndex"
+            class="form__input"
+            placeholder="Enter title" />
+        </div>
+        <div class="form__group">
+          <label :for="'description-' + courseIndex" class="form__label">
+            Description
+          </label>
+          <textarea
+            v-model="course.description"
+            :id="'description-' + courseIndex"
+            class="form__input form__textarea"
+            placeholder="Enter description"></textarea>
+        </div>
+        <div class="form__group">
+          <label :for="'cover-' + courseIndex" class="form__label">Cover</label>
+          <input
+            v-model="course.cover"
+            :id="'cover-' + courseIndex"
+            class="form__input"
+            placeholder="Enter cover image URL" />
+        </div>
+        <div class="form__group">
+          <label :for="'link-' + courseIndex" class="form__label">
+            Course Link
+          </label>
+          <input
+            v-model="course.link"
+            :id="'link-' + courseIndex"
+            class="form__input"
+            placeholder="Enter course link" />
+        </div>
+
+        <!-- Price -->
+        <div class="form__group">
+          <label :for="'price-original-' + courseIndex" class="form__label">
+            Price (Original)
+          </label>
+          <input
+            v-model="course.price.original"
+            :id="'price-original-' + courseIndex"
+            class="form__input"
+            placeholder="Enter original price" />
+        </div>
+        <div class="form__group">
+          <label :for="'price-discounted-' + courseIndex" class="form__label">
+            Price (Discounted)
+          </label>
+          <input
+            v-model="course.price.discounted"
+            :id="'price-discounted-' + courseIndex"
+            class="form__input"
+            placeholder="Enter discounted price" />
+        </div>
+
+        <!-- Subjects -->
+        <div class="form__group">
+          <h4 class="form__label__index">Subjects</h4>
+          <div
+            v-for="(subject, subjectIndex) in course.subjects"
+            :key="subject.id || subjectIndex"
+            class="form__group">
+            <label class="form__label">Category</label>
+            <input
+              v-model="subject.category"
+              class="form__input"
+              placeholder="Enter category" />
+
+            <label class="form__label">Topics</label>
+            <textarea
+              v-model="subject.topicsString"
+              class="form__input form__textarea"
+              placeholder="Enter topics, separated by commas"
+              @input="updateTopicsArray(subject)"></textarea>
+
+            <button
+              type="button"
+              class="form__button btn btn-danger"
+              @click="removeSubject(courseIndex, subjectIndex)">
+              Remove Subject
+            </button>
+          </div>
+          <button
+            type="button"
+            class="form__button btn btn-secondary"
+            @click="addSubject(courseIndex)">
+            Add Subject
+          </button>
+        </div>
+
+        <!-- Works -->
+        <div class="form__group">
+          <h4 class="form__label__index">Works</h4>
+          <div
+            v-for="(work, workIndex) in course.works"
+            :key="work.id || workIndex"
+            class="form__group">
+            <label class="form__label">Title</label>
+            <input
+              v-model="work.title"
+              class="form__input"
+              placeholder="Enter work title" />
+
+            <label class="form__label">URL</label>
+            <input
+              v-model="work.url"
+              class="form__input"
+              placeholder="Enter work URL" />
+
+            <button
+              type="button"
+              class="form__button btn btn-danger"
+              @click="removeWork(courseIndex, workIndex)">
+              Remove Work
+            </button>
+          </div>
+          <button
+            type="button"
+            class="form__button btn btn-secondary"
+            @click="addWork(courseIndex)">
+            Add Work
+          </button>
+        </div>
+      </div>
+
+      <div class="form__actions w7-column-space-between">
+        <button
+          type="button"
+          class="form__button btn btn-primary"
+          @click="addCourse">
+          Add Course
+        </button>
+        <button type="submit" class="form__button btn btn-success">
+          Save All
+        </button>
+      </div>
+    </div>
+  </form>
 </template>
 
 <script lang="ts">
-import { Course } from "@/models/biomedsandra-api.model";
-import { defineComponent, PropType } from "vue";
+import { defineComponent } from "vue";
+import { Course, Subject } from "@/models/biomedsandra-api.model";
+import {
+  createCourse,
+  updateCourse,
+  fetchCourses,
+} from "@/services/CourseService";
 
 export default defineComponent({
   name: "CourseForm",
-  props: {
-    data: {
-      type: Object as PropType<{ name: string; data: Course[] }>,
-      required: true,
-    },
-  },
   data() {
     return {
-      formData: JSON.parse(JSON.stringify(this.data.data)),
-      subjectsStrings: this.data.data.map((course) =>
-        course.subjects.join(", ")
-      ),
-      worksStrings: this.data.data.map((course) => course.works.join(", ")),
+      formData: [] as Course[],
     };
   },
+  async mounted() {
+    await this.loadCourses();
+  },
   methods: {
-    handleSave() {
-      this.$emit("save", this.formData);
+    async loadCourses() {
+      const courses = await fetchCourses();
+      this.formData = courses.map((course) => ({
+        ...course,
+        subjects: course.subjects.map((subject) => ({
+          ...subject,
+          topicsString: subject.topics.join(", "),
+        })),
+      }));
     },
-    addSubject() {
-      this.formData.subjects.push({
+    async handleSaveAll() {
+      for (const course of this.formData) {
+        course.subjects = course.subjects.map((subject) => ({
+          ...subject,
+          topics: subject.topicsString
+            ? subject.topicsString.split(",").map((t) => t.trim())
+            : [],
+        }));
+        if (course.id) {
+          await updateCourse(course.id, course);
+        } else {
+          await createCourse(course);
+        }
+      }
+      await this.loadCourses();
+    },
+    addCourse() {
+      this.formData.push({
+        id: null,
+        title: "",
+        description: "",
+        cover: "",
+        link: "",
+        type: "",
+        price: { original: "", discounted: "" },
+        subjects: [],
+        works: [],
+      });
+    },
+    addSubject(courseIndex: number) {
+      this.formData[courseIndex].subjects.push({
         id: null,
         category: "",
         topics: [],
         topicsString: "",
-        courseId: this.formData.id,
+        courseId: null,
       });
     },
-    removeSubject(index: number) {
-      this.formData.subjects.splice(index, 1);
+    removeSubject(courseIndex: number, subjectIndex: number) {
+      this.formData[courseIndex].subjects.splice(subjectIndex, 1);
     },
-    addWork() {
-      this.formData.works.push({
+    addWork(courseIndex: number) {
+      this.formData[courseIndex].works.push({
         id: null,
         title: "",
         url: "",
-        courseId: this.formData.id,
+        courseId: null,
       });
     },
-    removeWork(index: number) {
-      this.formData.works.splice(index, 1);
+    removeWork(courseIndex: number, workIndex: number) {
+      this.formData[courseIndex].works.splice(workIndex, 1);
+    },
+    updateTopicsArray(subject: Subject) {
+      subject.topics = subject.topicsString
+        ? subject.topicsString.split(",").map((t) => t.trim())
+        : [];
     },
   },
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/styles/_variables.scss";
+@import "@/styles/_mixins.scss";
+
 .course-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
+  background-color: $oxford-blue;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+  .form__title {
+    color: $white;
+    margin-bottom: 12px;
+  }
 
-.form-section {
-  margin-top: 16px;
-}
+  .form__section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid $yale-blue;
+    border-radius: 8px;
+    background-color: $black;
+  }
 
-.btn {
-  padding: 8px 16px;
-  border: none;
-  cursor: pointer;
-}
+  .form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-.btn-primary {
-  background-color: blue;
-  color: white;
-}
+    .form__label {
+      font-size: 14px;
+      font-weight: bold;
+      color: $white;
 
-.btn-secondary {
-  background-color: gray;
-  color: white;
-}
+      &__index {
+        color: $mikado-yellow;
+      }
+    }
 
-.btn-danger {
-  background-color: red;
-  color: white;
+    .form__input {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid $yale-blue;
+      background-color: $black;
+      color: $white;
+
+      &.form__textarea {
+        height: 80px;
+        resize: none;
+      }
+    }
+  }
+
+  .form__button {
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+
+    &.btn-primary {
+      background-color: $primary;
+
+      &:hover {
+        background-color: darken($primary, 10%);
+      }
+    }
+
+    &.btn-secondary {
+      background-color: $secondary;
+
+      &:hover {
+        background-color: darken($secondary, 10%);
+      }
+    }
+
+    &.btn-danger {
+      background-color: $error;
+
+      &:hover {
+        background-color: darken($error, 10%);
+      }
+    }
+
+    &.btn-success {
+      background-color: $success;
+
+      &:hover {
+        background-color: darken($success, 10%);
+      }
+    }
+  }
 }
 </style>

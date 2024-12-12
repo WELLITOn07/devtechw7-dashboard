@@ -14,7 +14,7 @@ export default defineComponent({
   components: { CourseForm },
   props: {
     data: {
-      type: Object as PropType<Course>,
+      type: Object as PropType<{ name: string; data: Course[] }>,
       required: true,
     },
   },
