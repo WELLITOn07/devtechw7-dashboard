@@ -1,4 +1,3 @@
-// src/store/application.ts
 import { defineStore } from "pinia";
 import { Application } from "@/models/application.model";
 
