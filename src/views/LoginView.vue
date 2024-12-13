@@ -45,6 +45,7 @@ import axios from "axios";
 import AlertDialog from "../components/AlertDialog.vue";
 import LoadingButton from "../components/LoadingButton.vue";
 import { LoginResponse } from "@/models/login-responde.model";
+import { setAuthToken, setUser } from "@/utils/get-auth-headers";
 
 export default defineComponent({
   name: "LoginView",
@@ -74,8 +75,9 @@ export default defineComponent({
         );
 
         const { access_token, user } = response.data;
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("user", JSON.stringify(user));
+
+        setAuthToken(access_token);
+        setUser(user);
 
         this.dialogTitle = "Success";
         this.dialogMessage = `Welcome, ${user.name}!`;

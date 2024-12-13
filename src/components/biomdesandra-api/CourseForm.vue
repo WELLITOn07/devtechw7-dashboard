@@ -16,14 +16,27 @@
 
         <!-- Course Details -->
         <div class="form__group">
-          <label :for="'id-' + courseIndex" class="form__label">ID</label>
+          <label
+            :for="'id-' + courseIndex"
+            class="form__label"
+            :class="{
+              'form__label--text-danger': existingCourseIds.has(course.id),
+            }">
+            {{
+              existingCourseIds.has(course.id)
+                ? "ID - Not allowed to edit"
+                : "ID"
+            }}
+          </label>
           <input
             v-model="course.id"
             :id="'id-' + courseIndex"
             type="text"
             class="form__input"
             placeholder="Enter ID"
-            required />
+            required
+            @input="course.id = course.id.toLowerCase()"
+            :disabled="existingCourseIds.has(course.id)" />
         </div>
         <div class="form__group">
           <label :for="'title-' + courseIndex" class="form__label">Title</label>
@@ -84,6 +97,7 @@
             v-model="course.price.original"
             :id="'price-original-' + courseIndex"
             type="text"
+            v-mask="'R$ #####,##'"
             class="form__input"
             placeholder="Enter original price" />
         </div>
@@ -95,6 +109,7 @@
             v-model="course.price.discounted"
             :id="'price-discounted-' + courseIndex"
             type="text"
+            v-mask="'R$ #####,##'"
             class="form__input"
             placeholder="Enter discounted price" />
         </div>
@@ -215,8 +230,8 @@ export default defineComponent({
   data() {
     return {
       formData: [] as Course[],
-      existingCourseIds: new Set<string>(),
-      loading: false,
+      existingCourseIds: new Set<string>() as Set<string>,
+      loading: false as boolean,
       loadingMessage: "" as string,
     };
   },
@@ -368,6 +383,10 @@ export default defineComponent({
       font-weight: bold;
       color: $white;
 
+      &.form__label--text-danger {
+        color: $error;
+      }
+
       &__index {
         color: $mikado-yellow;
       }
@@ -394,6 +413,7 @@ export default defineComponent({
 
     &.btn-primary {
       background-color: $primary;
+      color: $white;
 
       &:hover {
         background-color: darken($primary, 10%);
