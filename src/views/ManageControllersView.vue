@@ -35,6 +35,7 @@ import { fetchControllerData } from "@/services/ControllerService";
 import CrudForm from "@/components/CrudForm.vue";
 import AlertDialog from "@/components/AlertDialog.vue";
 import axios from "axios";
+import { getAuthHeaders } from "@/utils/get-auth-headers";
 
 export default defineComponent({
   name: "ManageControllersView",
@@ -96,19 +97,10 @@ export default defineComponent({
       updatedData: Record<string, any>
     ) => {
       try {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          throw new Error("Authentication token is missing.");
-        }
-
         const response = await axios.post(
           `${process.env.VUE_APP_API_URL}/${controllerName}`,
           updatedData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          getAuthHeaders()
         );
 
         if (response.status === 200 || response.status === 201) {

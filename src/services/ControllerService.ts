@@ -1,14 +1,4 @@
-function getAuthHeaders() {
-  const token = localStorage.getItem("access_token");
-  if (!token) {
-    throw new Error("Authentication token is missing.");
-  }
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-}
+import { getAuthHeaders } from "@/utils/get-auth-headers";
 
 export async function fetchControllerData(
   controllerName: string
