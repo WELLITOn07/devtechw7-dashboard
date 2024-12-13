@@ -195,10 +195,7 @@
     </div>
   </form>
 
-  <LoadingDialog
-    v-if="loading"
-    :visible="loading"
-    :message="loadingMessage" />
+  <LoadingDialog v-if="loading" :visible="loading" :message="loadingMessage" />
 </template>
 
 <script lang="ts">
