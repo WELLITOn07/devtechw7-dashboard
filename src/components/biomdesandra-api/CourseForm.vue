@@ -194,6 +194,11 @@
       </div>
     </div>
   </form>
+
+  <LoadingDialog
+    v-if="loading"
+    :visible="loading"
+    :message="loadingMessage" />
 </template>
 
 <script lang="ts">
@@ -205,50 +210,73 @@ import {
   updateCourse,
   deleteCourse,
 } from "@/services/CourseService";
+import LoadingDialog from "@/components/LoadingDialog.vue";
 
 export default defineComponent({
   name: "CourseForm",
+  components: { LoadingDialog },
   data() {
     return {
       formData: [] as Course[],
       existingCourseIds: new Set<string>(),
+      loading: false,
+      loadingMessage: "" as string,
     };
   },
   async mounted() {
+    this.toggleLoading(true, "Loading courses...");
     await this.loadCourses();
+    this.toggleLoading(false);
   },
   methods: {
+    toggleLoading(state: boolean, message = "Loading...") {
+      this.loadingMessage = message;
+      this.loading = state;
+    },
     async loadCourses() {
-      const courses = await fetchCourses();
-      this.formData = courses.map((course) => ({
-        ...course,
-        subjects: course.subjects.map((subject) => ({
-          ...subject,
-          topicsString: subject.topics.join(", "),
-        })),
-      }));
-      this.existingCourseIds = new Set(courses.map((course) => course.id));
+      try {
+        const courses = await fetchCourses();
+        this.formData = courses.map((course) => ({
+          ...course,
+          subjects: course.subjects.map((subject) => ({
+            ...subject,
+            topicsString: subject.topics.join(", "),
+          })),
+        }));
+        this.existingCourseIds = new Set(courses.map((course) => course.id));
+      } catch (error) {
+        console.error("Error loading courses:", error);
+      }
     },
     async handleSaveAll() {
-      for (const course of this.formData) {
-        course.price = {
-          original: String(course.price.original),
-          discounted: String(course.price.discounted),
-        };
-        course.subjects = course.subjects.map((subject) => ({
-          ...subject,
-          topics: subject.topicsString
-            ? subject.topicsString.split(",").map((t) => t.trim())
-            : [],
-        }));
-        if (this.existingCourseIds.has(course.id)) {
-          await updateCourse(course.id, course);
-        } else {
-          const createdCourse = await createCourse(course);
-          this.existingCourseIds.add(createdCourse.id);
+      this.toggleLoading(true, "Saving courses...");
+      try {
+        for (const course of this.formData) {
+          course.price = {
+            original: String(course.price.original),
+            discounted: String(course.price.discounted),
+          };
+          course.subjects = course.subjects.map((subject) => ({
+            ...subject,
+            topics: subject.topicsString
+              ? subject.topicsString.split(",").map((t) => t.trim())
+              : [],
+          }));
+          if (this.existingCourseIds.has(course.id)) {
+            this.toggleLoading(true, `Updating course: ${course.title}...`);
+            await updateCourse(course.id, course);
+          } else {
+            this.toggleLoading(true, `Creating new course: ${course.title}...`);
+            const createdCourse = await createCourse(course);
+            this.existingCourseIds.add(createdCourse.id);
+          }
         }
+        await this.loadCourses();
+      } catch (error) {
+        console.error("Error saving courses:", error);
+      } finally {
+        this.toggleLoading(false);
       }
-      await this.loadCourses();
     },
     addCourse() {
       this.formData.push({
@@ -288,16 +316,18 @@ export default defineComponent({
       this.formData[courseIndex].works.splice(workIndex, 1);
     },
     async removeCourse(courseId: string, courseIndex: number) {
-      if (this.existingCourseIds.has(courseId)) {
-        try {
+      this.toggleLoading(true, `Deleting course with ID: ${courseId}...`);
+      try {
+        if (this.existingCourseIds.has(courseId)) {
           await deleteCourse(courseId);
           this.existingCourseIds.delete(courseId);
-        } catch (error) {
-          console.error(`Failed to delete course with ID ${courseId}:`, error);
-          return;
         }
+        this.formData.splice(courseIndex, 1);
+      } catch (error) {
+        console.error(`Failed to delete course with ID ${courseId}:`, error);
+      } finally {
+        this.toggleLoading(false);
       }
-      this.formData.splice(courseIndex, 1);
     },
   },
 });
