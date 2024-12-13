@@ -3,3 +3,7 @@ export enum ControllerDevTechW7 {
   ACCESS_RULES = "access-rules",
   USER = "user",
 }
+
+export enum ControllerBiomedsandraApi {
+  COURSES = "courses",
+}

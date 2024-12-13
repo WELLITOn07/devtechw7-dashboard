@@ -1,14 +1,22 @@
+function getAuthHeaders() {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    throw new Error("Authentication token is missing.");
+  }
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+}
+
 export async function fetchControllerData(
   controllerName: string
 ): Promise<{ name: string; data: Record<string, any> }> {
   try {
     const response = await fetch(
       `${process.env.VUE_APP_API_URL}/${controllerName}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }
+      getAuthHeaders()
     );
 
     if (!response.ok) {
