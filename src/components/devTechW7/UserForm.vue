@@ -128,7 +128,6 @@ export default defineComponent({
   methods: {
     async handleSaveAll() {
       const newUsers: User[] = [];
-      debugger;
       this.formData.forEach((user: User, index: number) => {
         user.rule = this.rolesStrings[index]
           .split(",")
