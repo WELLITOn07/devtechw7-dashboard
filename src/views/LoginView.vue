@@ -1,7 +1,9 @@
 <template>
   <div class="login">
     <h1 class="login__title">DevTechW7 Dashboard</h1>
-    <img src="../assets/logo.png" alt="DevTechW7 Logo" class="login__logo" />
+    <video autoplay muted loop class="login__video">
+      <source src="../assets/logo-video.mp4" type="video/mp4" />
+    </video>
     <form class="login__form" @submit.prevent="handleLogin">
       <div class="login__form-group">
         <label for="email" class="login__label">Email</label>
@@ -125,9 +127,14 @@ export default defineComponent({
     font-size: 2rem;
   }
 
-  &__logo {
-    max-width: 120px;
-    margin-bottom: 24px;
+  &__video {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    @media (min-width: 768px) {
+      max-height: 600px;
+    }
+    object-fit: cover;
   }
 
   &__form {
@@ -163,3 +170,4 @@ export default defineComponent({
   }
 }
 </style>
+
