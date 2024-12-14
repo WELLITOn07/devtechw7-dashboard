@@ -29,11 +29,10 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!sessionStorage.getItem("access_token")
+  const isAuthenticated = !!sessionStorage.getItem("access_token");
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: "login" });
   } else if (to.name === "login" && isAuthenticated) {
-
     next({ name: "home" });
   } else {
     next();
