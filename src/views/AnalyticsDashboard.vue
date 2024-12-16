@@ -1,6 +1,5 @@
 <template>
   <div class="dashboard">
-    <h1 class="w7-title montserrat-bold">Analytics</h1>
     <div v-if="isLoading" class="w7-center">
       <p>Loading events...</p>
     </div>
@@ -80,7 +79,6 @@ export default defineComponent({
 .dashboard {
   padding: 16px;
   background-color: $black;
-  color: $mikado-yellow;
   min-height: 100vh;
 
   &__list {
