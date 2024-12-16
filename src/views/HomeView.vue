@@ -9,7 +9,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import ApplicationList from "@/components/ApplicationList.vue";
-import AnalyticsDashboard from "./AnalyticsDashboard.vue";
+import AnalyticsDashboard from "@/views/AnalyticsDashboard.vue";
 
 export default defineComponent({
   name: "HomeView",

@@ -13,6 +13,5 @@ export async function fetchAnalyticsEvents(): Promise<AnalyticsEvent[]> {
 }
 
 export async function deleteAllAnalyticsEvents(): Promise<void> {
-  const response = await axios.delete(`${API_BASE_URL}/all`, getAuthHeaders());
-  return response.data;
+  await axios.delete(`${API_BASE_URL}/all`, getAuthHeaders());
 }

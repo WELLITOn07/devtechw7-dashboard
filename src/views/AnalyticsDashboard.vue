@@ -1,95 +1,85 @@
 <template>
-  <div class="dashboard">
-    <div v-if="isLoading" class="w7-center">
-      <p>Loading events...</p>
-    </div>
-    <div v-else-if="events.length === 0" class="w7-center">
-      <p>No events found.</p>
-    </div>
-    <div v-else class="dashboard__list">
-      <AnalyticsEventCard
-        v-for="event in events"
-        :key="event.id"
-        :analytics-event="event" />
-      <button
-        class="dashboard__delete-btn btn btn-danger"
-        @click="deleteAll"
-        :disabled="isLoading">
-        <span v-if="isLoading">Deleting...</span>
-        <span v-else>Delete All Events</span>
-      </button>
+  <div class="analytics-dashboard w7-padding">
+    <h1 class="dashboard-title w7-title montserrat-bold">Analytics</h1>
+    <div class="application-container w7-margin">
+      <div
+        v-for="(events, appName) in groupedEvents"
+        :key="appName"
+        class="application-card">
+        <h2 class="application-title montserrat-medium">{{ appName }}</h2>
+        <div class="events-container">
+          <AnalyticsEventCard
+            v-for="event in events"
+            :key="event.id"
+            :analytics-event="event" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
-import {
-  fetchAnalyticsEvents,
-  deleteAllAnalyticsEvents,
-} from "@/services/AnalyticsService";
+import { defineComponent, computed } from "vue";
 import AnalyticsEventCard from "@/components/devTechW7/AnalyticsEventCard.vue";
-import { AnalyticsEvent } from "@/models/analytics-events.model";
+import { useAnalyticsEvents } from "@/composables/useAnalyticsEvents";
 
 export default defineComponent({
   name: "AnalyticsDashboard",
   components: { AnalyticsEventCard },
   setup() {
-    const events = ref<AnalyticsEvent[]>([]);
-    const isLoading = ref(true);
+    const { events, isLoading } = useAnalyticsEvents();
 
-    const loadEvents = async () => {
-      isLoading.value = true;
-      try {
-        events.value = await fetchAnalyticsEvents();
-      } catch (error) {
-        console.error("Error fetching analytics events:", error);
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    const deleteAll = async () => {
-      if (confirm("Are you sure you want to delete all events?")) {
-        isLoading.value = true;
-        try {
-          await deleteAllAnalyticsEvents();
-          events.value = [];
-          alert("All events deleted successfully.");
-        } catch (error) {
-          console.error("Error deleting all events:", error);
-        } finally {
-          isLoading.value = false;
+    const groupedEvents = computed(() =>
+      events.value.reduce((acc, event) => {
+        if (!acc[event.application]) {
+          acc[event.application] = [];
         }
-      }
-    };
+        acc[event.application].push(event);
+        return acc;
+      }, {} as Record<string, typeof events.value>)
+    );
 
-    onMounted(() => {
-      loadEvents();
-    });
-
-    return { events, isLoading, deleteAll };
+    return { groupedEvents, isLoading };
   },
 });
 </script>
 
 <style scoped lang="scss">
+@import "@/styles/_mixins.scss";
 @import "@/styles/_variables.scss";
 
-.dashboard {
-  padding: 16px;
+.analytics-dashboard {
   background-color: $black;
+  color: $white;
   min-height: 100vh;
+}
 
-  &__list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+.dashboard-title {
+  text-align: center;
+}
 
-  &__delete-btn {
-    align-self: center;
-    margin-top: 24px;
-  }
+.application-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.application-card {
+  @include Applicationcard;
+  width: 100%;
+  max-width: 600px;
+}
+
+.application-title {
+  color: $white;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.events-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 </style>
