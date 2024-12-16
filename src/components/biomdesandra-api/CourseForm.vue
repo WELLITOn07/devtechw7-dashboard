@@ -97,9 +97,11 @@
             v-model="course.price.original"
             :id="'price-original-' + courseIndex"
             type="text"
-            v-mask="'R$ #####,##'"
+            @input="
+              course.price.original = formatCurrency(course.price.original)
+            "
             class="form__input"
-            placeholder="Enter original price" />
+            placeholder="R$ 0,00" />
         </div>
         <div class="form__group">
           <label :for="'price-discounted-' + courseIndex" class="form__label">
@@ -109,9 +111,11 @@
             v-model="course.price.discounted"
             :id="'price-discounted-' + courseIndex"
             type="text"
-            v-mask="'R$ #####,##'"
+            @input="
+              course.price.discounted = formatCurrency(course.price.discounted)
+            "
             class="form__input"
-            placeholder="Enter discounted price" />
+            placeholder="R$ 0,00" />
         </div>
 
         <!-- Subjects -->
@@ -222,6 +226,7 @@ import {
   updateCourse,
   deleteCourse,
 } from "@/services/CourseService";
+import { addCurrencyPrefix } from "@/utils/add-currency-prefix";
 import LoadingDialog from "@/components/LoadingDialog.vue";
 
 export default defineComponent({
@@ -241,6 +246,9 @@ export default defineComponent({
     this.toggleLoading(false);
   },
   methods: {
+    formatCurrency(value: string) {
+      return addCurrencyPrefix(value);
+    },
     toggleLoading(state: boolean, message = "Loading...") {
       this.loadingMessage = message;
       this.loading = state;

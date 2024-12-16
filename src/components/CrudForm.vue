@@ -40,7 +40,8 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  emits: ["save"],
+  setup(props, { emit }) {
     const crudFormComponent = ref<
       null | typeof DevTechW7View | typeof BiomedSandraView
     >(null);
@@ -65,7 +66,7 @@ export default defineComponent({
     );
 
     const handleSave = (updatedData: Record<string, any>) => {
-      console.log("CrudForm: handleSave", updatedData);
+      emit("save", updatedData);
     };
 
     return {
@@ -75,3 +76,4 @@ export default defineComponent({
   },
 });
 </script>
+

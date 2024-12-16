@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import ManageControllersView from "@/views/ManageControllersView.vue";
+import AnalyticsDashboard from "@/views/AnalyticsDashboard.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -19,6 +20,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/manage/:name",
     name: "manage-controllers",
     component: ManageControllersView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/analytics",
+    name: "analytics-dashboard",
+    component: AnalyticsDashboard,
     meta: { requiresAuth: true },
   },
 ];
