@@ -23,7 +23,7 @@ export default defineComponent({
 .home {
   padding: 16px;
   background-color: $black;
-  color: $mikado-yellow;
+  color: $white;
   min-height: 100vh;
 }
 </style>

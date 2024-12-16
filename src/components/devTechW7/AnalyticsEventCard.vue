@@ -89,7 +89,6 @@ export default defineComponent({
 
 .dashboard-title {
   text-align: center;
-  margin-bottom: 32px;
 }
 
 .application-container {
