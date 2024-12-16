@@ -2,21 +2,23 @@
   <div class="home">
     <h1 class="montserrat-bold w7-title w7-margin">Applications Dashboard</h1>
     <ApplicationList />
+    <AnalyticsDashboard />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ApplicationList from "../components/ApplicationList.vue";
+import ApplicationList from "@/components/ApplicationList.vue";
+import AnalyticsDashboard from "./AnalyticsDashboard.vue";
 
 export default defineComponent({
   name: "HomeView",
-  components: { ApplicationList },
+  components: { ApplicationList, AnalyticsDashboard },
 });
 </script>
 
 <style scoped lang="scss">
-@import "../styles/_variables.scss";
+@import "@/styles/_variables.scss";
 
 .home {
   padding: 16px;
