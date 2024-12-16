@@ -21,17 +21,14 @@ export function useAnalyticsEvents() {
   };
 
   const deleteAll = async () => {
-    if (confirm("Are you sure you want to delete all events?")) {
-      isLoading.value = true;
-      try {
-        await deleteAllAnalyticsEvents();
-        events.value = [];
-        alert("All events deleted successfully.");
-      } catch (error) {
-        console.error("Error deleting all events:", error);
-      } finally {
-        isLoading.value = false;
-      }
+    isLoading.value = true;
+    try {
+      await deleteAllAnalyticsEvents();
+      events.value = [];
+    } catch (error) {
+      console.error("Error deleting all events:", error);
+    } finally {
+      isLoading.value = false;
     }
   };
 
