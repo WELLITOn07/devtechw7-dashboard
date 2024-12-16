@@ -65,6 +65,7 @@ export default defineComponent({
   align-items: center;
   width: 40px;
   height: 40px;
+  padding: 5px;
   border: 2px solid $primary;
   background-color: $primary;
   color: $white;

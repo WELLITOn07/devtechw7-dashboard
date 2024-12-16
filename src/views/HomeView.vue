@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <AppHeader />
     <h1 class="montserrat-bold w7-title w7-margin">Applications Dashboard</h1>
     <ApplicationList />
     <AnalyticsDashboard />
@@ -10,10 +11,11 @@
 import { defineComponent } from "vue";
 import ApplicationList from "@/components/ApplicationList.vue";
 import AnalyticsDashboard from "@/views/AnalyticsDashboard.vue";
+import AppHeader from "@/components/Header.vue";
 
 export default defineComponent({
   name: "HomeView",
-  components: { ApplicationList, AnalyticsDashboard },
+  components: { ApplicationList, AnalyticsDashboard, AppHeader },
 });
 </script>
 
