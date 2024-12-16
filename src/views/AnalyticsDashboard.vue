@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-    <h1 class="w7-title montserrat-bold">Analytics Dashboard</h1>
+    <h1 class="w7-title montserrat-bold">Analytics</h1>
     <div v-if="isLoading" class="w7-center">
       <p>Loading events...</p>
     </div>
@@ -11,7 +11,7 @@
       <AnalyticsEventCard
         v-for="event in events"
         :key="event.id"
-        :event="event" />
+        :analytics-event="event" />
       <button
         class="dashboard__delete-btn btn btn-danger"
         @click="deleteAll"
@@ -30,15 +30,7 @@ import {
   deleteAllAnalyticsEvents,
 } from "@/services/AnalyticsService";
 import AnalyticsEventCard from "@/components/devTechW7/AnalyticsEventCard.vue";
-
-interface AnalyticsEvent {
-  id: number;
-  application: string;
-  eventType: string;
-  eventName: string;
-  quantity: number;
-  updatedAt: string;
-}
+import { AnalyticsEvent } from "@/models/analytics-events.model";
 
 export default defineComponent({
   name: "AnalyticsDashboard",
