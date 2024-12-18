@@ -48,7 +48,10 @@
       <button type="submit" class="form__button btn btn-success">
         {{ localFormData.id ? "Update" : "Create" }}
       </button>
-      <button type="button" class="form__button btn btn-primary" @click="onPreview">
+      <button
+        type="button"
+        class="form__button btn btn-primary"
+        @click="onPreview">
         Preview
       </button>
     </div>
