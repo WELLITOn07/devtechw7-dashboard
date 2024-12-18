@@ -65,7 +65,7 @@ export default defineComponent({
   name: "AdvertisementForm",
   props: {
     formData: {
-      type: Object as PropType<Advertisement>,
+      type: Object as PropType<Advertisement | null>,
       default: () => ({ title: "", description: "", link: "", image: "" }),
     },
   },

@@ -1,21 +1,31 @@
 <template>
-  <div class="central-view">
-    <h1 class="title">Advertisement Management</h1>
+  <div class="central-view w7-padding">
+    <header class="central-view__header w7-space-between">
+      <h1 class="central-view__title w7-title montserrat-bold">
+        Advertisement Management
+      </h1>
+    </header>
 
-    <!-- Form -->
-    <AdvertisementForm
-      @save="handleSave"
-      @preview="handlePreview"
-      :form-data="currentAd" />
+    <!-- Form Section -->
+    <section class="central-view__form">
+      <AdvertisementForm
+        @save="handleSave"
+        @preview="handlePreview"
+        :form-data="currentAd" />
+    </section>
 
-    <!-- List -->
-    <AdvertisementList
-      :advertisements="advertisements"
-      @edit="handleEdit"
-      @delete="handleDelete" />
+    <!-- List Section -->
+    <section class="central-view__list w7-margin-top">
+      <AdvertisementList
+        :advertisements="advertisements"
+        @edit="handleEdit"
+        @delete="handleDelete" />
+    </section>
 
-    <!-- Preview -->
-    <AdvertisementPreview v-if="previewAd" :ad="previewAd" />
+    <!-- Preview Section -->
+    <section v-if="previewAd" class="central-view__preview w7-margin-top">
+      <AdvertisementPreview :ad="previewAd" />
+    </section>
   </div>
 </template>
 
@@ -84,13 +94,48 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
+@import "@/styles/_mixins.scss";
 
 .central-view {
-  padding: 16px;
+  background-color: $oxford-blue;
+  color: $white;
+  height: 100vh;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 
-  .title {
-    color: $gold;
-    margin-bottom: 24px;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+
+    .central-view__title {
+      color: $mikado-yellow;
+    }
+  }
+
+  &__form,
+  &__list,
+  &__preview {
+    background-color: darken($oxford-blue, 5%);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  &__form {
+    border: 1px solid $yale-blue;
+  }
+
+  &__list {
+    margin-top: 16px;
+    border: 1px solid $mikado-yellow;
+  }
+
+  &__preview {
+    border: 1px solid $gold;
   }
 }
 </style>
