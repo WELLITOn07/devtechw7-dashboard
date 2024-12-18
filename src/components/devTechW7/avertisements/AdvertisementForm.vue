@@ -5,53 +5,36 @@
     </h3>
     <div class="form__group">
       <label for="title" class="form__label">Title</label>
-      <input
-        id="title"
-        v-model="localFormData.title"
-        type="text"
-        class="form__input"
-        placeholder="Enter advertisement title"
-        required />
+      <input id="title" v-model="localFormData.title" type="text" class="form__input"
+        placeholder="Enter advertisement title" required />
     </div>
 
     <div class="form__group">
       <label for="description" class="form__label">Description</label>
-      <textarea
-        id="description"
-        v-model="localFormData.description"
-        class="form__input form__textarea"
+      <textarea id="description" v-model="localFormData.description" class="form__input form__textarea"
         placeholder="Enter advertisement description"></textarea>
     </div>
 
     <div class="form__group">
       <label for="link" class="form__label">Link</label>
-      <input
-        id="link"
-        v-model="localFormData.link"
-        type="url"
-        class="form__input"
-        placeholder="Enter URL"
-        required />
+      <input id="link" v-model="localFormData.link" type="url" class="form__input" placeholder="Enter URL" required />
     </div>
 
     <div class="form__group">
       <label for="image" class="form__label">Image (Base64)</label>
-      <textarea
-        id="image"
-        v-model="localFormData.image"
-        v-base64-input
-        class="form__input form__textarea"
+      <textarea id="image" v-model="localFormData.image" v-base64-input class="form__input form__textarea"
         placeholder="Paste base64 image here"></textarea>
     </div>
+
+    <a href="https://www.base64-image.de/" target="_blank" class="link-encode">
+      Encode Image
+    </a>
 
     <div class="form__actions w7-space-between">
       <button type="submit" class="form__button btn btn-success">
         {{ localFormData.id ? "Update" : "Create" }}
       </button>
-      <button
-        type="button"
-        class="form__button btn btn-primary"
-        @click="onPreview">
+      <button type="button" class="form__button btn btn-primary" @click="onPreview">
         Preview
       </button>
     </div>
@@ -138,6 +121,25 @@ export default defineComponent({
       }
     }
   }
+
+    .link-encode {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background-color: $primary;
+      color: $white;
+      text-decoration: none;
+      font-size: 16px;
+      width: 100px;
+  
+      &:hover {
+        background-color: darken($primary, 10%);
+      }
+  
+      i {
+        margin-left: 4px;
+      }
+    }
 
   .form__actions {
     display: flex;

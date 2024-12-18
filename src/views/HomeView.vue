@@ -4,7 +4,7 @@
     <h1 class="montserrat-bold w7-title w7-margin">Applications Dashboard</h1>
     <ApplicationList />
     <AnalyticsDashboard />
-    <div class="advertisement-card" @click="goToAdvertisementCentral">
+    <div class="advertisement__container" @click="goToAdvertisementCentral">
       <h2>Central de Propagandas</h2>
       <p>Gerencie suas propagandas e campanhas com facilidade.</p>
     </div>
@@ -30,7 +30,6 @@ export default defineComponent({
 
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
-@import "@/styles/_mixins.scss";
 
 .home {
   padding: 16px;
@@ -39,8 +38,13 @@ export default defineComponent({
   min-height: 100vh;
 }
 
-.advertisement-card {
-  @include Applicationcard;
+.advertisement__container {
+  background-color: #001d3d;
+  color: #ffc300;
+  padding: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin-top: 24px;
 
   h2 {
