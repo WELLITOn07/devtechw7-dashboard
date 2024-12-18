@@ -35,12 +35,12 @@
     </div>
 
     <div class="form__group">
-      <label for="image" class="form__label">Upload Image</label>
-      <input
+      <label for="image" class="form__label">Image (Base64)</label>
+      <textarea
         id="image"
-        type="file"
-        @change="handleFileUpload"
-        class="form__input form__file" />
+        v-model="localFormData.image"
+        class="form__input form__textarea"
+        placeholder="Paste base64 image here"></textarea>
     </div>
 
     <div class="form__actions w7-space-between">
@@ -73,16 +73,6 @@ export default defineComponent({
   setup(props, { emit }) {
     const localFormData = ref({ ...props.formData });
 
-    const handleFileUpload = (event: Event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () =>
-          (localFormData.value.image = reader.result as string);
-        reader.readAsDataURL(file);
-      }
-    };
-
     const onSubmit = () => {
       emit("save", { ...localFormData.value });
     };
@@ -99,7 +89,7 @@ export default defineComponent({
       { deep: true }
     );
 
-    return { localFormData, handleFileUpload, onSubmit, onPreview };
+    return { localFormData, onSubmit, onPreview };
   },
 });
 </script>
@@ -144,11 +134,6 @@ export default defineComponent({
       &.form__textarea {
         height: 80px;
         resize: none;
-      }
-
-      &.form__file {
-        background-color: $oxford-blue;
-        color: $white;
       }
     }
   }

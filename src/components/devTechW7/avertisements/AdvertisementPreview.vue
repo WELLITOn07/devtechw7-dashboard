@@ -8,7 +8,7 @@
 
       <img
         v-if="ad.image"
-        :src="ad.image"
+        :src="`data:image/jpeg;base64,${ad.image}`"
         alt="Propaganda"
         class="preview-image" />
 
