@@ -12,5 +12,8 @@ export const useApplicationStore = defineStore("application", {
     getApplicationByName(name: string): Application | undefined {
       return this.applications.find((app) => app.name === name);
     },
+    getApplicationById(id: number): Application | undefined {
+      return this.applications.find((app) => app.id === id);
+    },
   },
 });

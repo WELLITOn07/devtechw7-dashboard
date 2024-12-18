@@ -39,3 +39,25 @@ export const deleteAdvertisement = async (id: number): Promise<void> => {
     getAuthHeaders()
   );
 };
+
+export const sendAdvertisementToAll = async (
+  applicationId: number,
+  advertisementId: number
+): Promise<void> => {
+  await axios.post(
+    `${process.env.VUE_APP_API_URL}/advertisements/send/${applicationId}`,
+    { advertisementId },
+    getAuthHeaders()
+  );
+};
+
+export const sendAdvertisementToSingle = async (
+  email: string,
+  advertisementId: number
+): Promise<void> => {
+  await axios.post(
+    `${process.env.VUE_APP_API_URL}/advertisements/send/test`,
+    { email, advertisementId },
+    getAuthHeaders()
+  );
+};

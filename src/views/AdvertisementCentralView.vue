@@ -22,6 +22,8 @@
         @delete="handleDelete" />
     </section>
 
+    <SendAdvertisement :advertisementId="selectedAdvertisementId" />
+
     <!-- Preview Section -->
     <section v-if="previewAd" class="central-view__preview w7-margin-top">
       <AdvertisementPreview :ad="previewAd" />
@@ -33,6 +35,7 @@
 import AdvertisementForm from "@/components/devTechW7/avertisements/AdvertisementForm.vue";
 import AdvertisementList from "@/components/devTechW7/avertisements/AdvertisementList.vue";
 import AdvertisementPreview from "@/components/devTechW7/avertisements/AdvertisementPreview.vue";
+import SendAdvertisement from "@/components/devTechW7/avertisements/SendAdvertisement.vue";
 import { Advertisement } from "@/models/advertisement.model";
 import {
   createAdvertisement,
@@ -44,11 +47,17 @@ import { defineComponent, ref, onMounted } from "vue";
 
 export default defineComponent({
   name: "AdvertisementCentralView",
-  components: { AdvertisementForm, AdvertisementList, AdvertisementPreview },
+  components: {
+    AdvertisementForm,
+    AdvertisementList,
+    AdvertisementPreview,
+    SendAdvertisement,
+  },
   setup() {
     const advertisements = ref<Advertisement[]>([]);
     const currentAd = ref<Advertisement | null>(null);
     const previewAd = ref<Advertisement | null>(null);
+    const selectedAdvertisementId = ref<number>(0);
 
     const loadAdvertisements = async () => {
       advertisements.value = await fetchAdvertisements();
@@ -66,6 +75,7 @@ export default defineComponent({
 
     const handleEdit = (ad: Advertisement) => {
       currentAd.value = { ...ad };
+      selectedAdvertisementId.value = Number(ad.id);
     };
 
     const handleDelete = async (id: number) => {
@@ -83,6 +93,7 @@ export default defineComponent({
       advertisements,
       currentAd,
       previewAd,
+      selectedAdvertisementId,
       handleSave,
       handleEdit,
       handleDelete,
