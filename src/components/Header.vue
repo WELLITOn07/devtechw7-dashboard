@@ -5,7 +5,7 @@
     </div>
     <div class="app-header__right">
       <div class="user-info">
-        <p class="user-name roboto-medium"> {{ user?.name }}</p>
+        <p class="user-name roboto-medium">{{ user?.name }}</p>
         <p class="user-roles roboto-light">Roles: {{ userRoles }}</p>
       </div>
     </div>

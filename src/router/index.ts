@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import ManageControllersView from "@/views/ManageControllersView.vue";
 import AnalyticsDashboard from "@/views/AnalyticsDashboard.vue";
+import AdvertisementCentralView from "@/views/AdvertisementCentralView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -26,6 +27,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/analytics",
     name: "analytics-dashboard",
     component: AnalyticsDashboard,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/advertisements",
+    name: "advertisement-central",
+    component: AdvertisementCentralView,
     meta: { requiresAuth: true },
   },
 ];
