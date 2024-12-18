@@ -39,6 +39,7 @@
       <textarea
         id="image"
         v-model="localFormData.image"
+        v-base64-input
         class="form__input form__textarea"
         placeholder="Paste base64 image here"></textarea>
     </div>

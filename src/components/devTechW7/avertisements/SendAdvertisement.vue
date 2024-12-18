@@ -185,8 +185,7 @@ export default defineComponent({
             props.advertisementId
           );
           dialogTitle.value = "Advertisement Sent";
-          dialogMessage.value =
-            "Advertisement sent to the single recipient!";
+          dialogMessage.value = "Advertisement sent to the single recipient!";
           showDialog.value = true;
         } catch (error) {
           console.error("Error sending advertisement to recipient:", error);
@@ -263,4 +262,3 @@ export default defineComponent({
   }
 }
 </style>
-
