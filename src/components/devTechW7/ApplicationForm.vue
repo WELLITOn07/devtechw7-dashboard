@@ -67,7 +67,10 @@
         @click="addApplication">
         Add Application
       </button>
-      <button type="submit" class="form__button btn btn-success">
+      <button
+        type="submit"
+        class="form__button btn btn-success"
+        :disabled="!formData.length">
         Save All
       </button>
     </div>
@@ -90,6 +93,9 @@ import { deleteApplication } from "@/services/ApplicationService";
 export default defineComponent({
   name: "ApplicationForm",
   components: { AlertDialog },
+  emits: {
+    save: (data: Application[]) => true,
+  },
   props: {
     data: {
       type: Object as PropType<{ data: Application[] }>,
@@ -279,3 +285,4 @@ export default defineComponent({
   }
 }
 </style>
+
