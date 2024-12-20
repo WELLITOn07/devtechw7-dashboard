@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import AlertDialog from "../components/AlertDialog.vue";
 import LoadingButton from "../components/LoadingButton.vue";
 import { LoginResponse } from "@/models/login-responde.model";
@@ -88,12 +88,11 @@ export default defineComponent({
         setTimeout(() => {
           this.$router.push("/");
         }, 2000);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
+      } catch (error: AxiosError | any) {
+        if (error.response) {
           this.dialogTitle = "Login Error";
           this.dialogMessage =
-            error.response?.data.message ||
-            "Failed to login. Please try again.";
+            error.response.data.message || "Failed to login. Please try again.";
         } else {
           this.dialogTitle = "Unexpected Error";
           this.dialogMessage =

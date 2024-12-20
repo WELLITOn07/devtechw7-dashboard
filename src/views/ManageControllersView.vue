@@ -36,6 +36,7 @@ import CrudForm from "@/components/CrudForm.vue";
 import AlertDialog from "@/components/AlertDialog.vue";
 import axios from "axios";
 import { getAuthHeaders } from "@/utils/get-auth-headers";
+import { AxiosError } from "axios";
 
 export default defineComponent({
   name: "ManageControllersView",
@@ -112,11 +113,11 @@ export default defineComponent({
             `Unexpected response: ${response.status} - ${response.statusText}`
           );
         }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
+      } catch (error: AxiosError | any) {
+        if (error.response) {
           dialogTitle.value = "Error Saving Data";
           dialogMessage.value =
-            error.response?.data.message ||
+            error.response.data.message ||
             `Failed to save data for "${controllerName}". Please try again.`;
         } else {
           dialogTitle.value = "Unexpected Error";

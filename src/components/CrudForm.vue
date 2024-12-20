@@ -19,6 +19,7 @@
 </style>
 
 <script lang="ts">
+/* eslint-disable */
 import { defineComponent, PropType, ref, watch } from "vue";
 import {
   ControllerDevTechW7,
@@ -34,6 +35,7 @@ export default defineComponent({
     data: {
       type: Object as PropType<Record<string, any>>,
       required: true,
+      default: () => ({}),
     },
     name: {
       type: String,
@@ -49,10 +51,15 @@ export default defineComponent({
     watch(
       () => props.name,
       (newValue) => {
+        if (!newValue) {
+          crudFormComponent.value = null;
+          return;
+        }
+
         switch (newValue) {
           case ControllerDevTechW7.APPLICATION:
-          case ControllerDevTechW7.ACCESS_RULES:
           case ControllerDevTechW7.USER:
+          case ControllerDevTechW7.ACCESS_RULES:
             crudFormComponent.value = DevTechW7View;
             break;
           case ControllerBiomedsandraApi.COURSES:

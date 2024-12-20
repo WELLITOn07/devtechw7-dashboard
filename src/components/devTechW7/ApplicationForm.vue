@@ -97,16 +97,23 @@ export default defineComponent({
     },
   },
   data() {
+    const rawData = Array.isArray(this.data.data) ? this.data.data : [];
+
     return {
-      formData: JSON.parse(JSON.stringify(this.data.data)),
-      controllersStrings: this.data.data.map((app) =>
-        app.controllers.join(", ")
+      formData: rawData.map((app) => ({
+        ...app,
+        controllers: app.controllers || [],
+        allowedRoles: app.allowedRoles || [],
+      })),
+      controllersStrings: rawData.map((app) =>
+        (app.controllers || []).join(", ")
       ),
-      allowedRolesStrings: this.data.data.map((app) =>
-        app.allowedRoles.join(", ")
+      allowedRolesStrings: rawData.map((app) =>
+        (app.allowedRoles || []).join(", ")
       ),
     };
   },
+
   setup() {
     const dialogTitle = ref("");
     const dialogMessage = ref("");
@@ -136,6 +143,8 @@ export default defineComponent({
         description: "",
         controllers: [],
         allowedRoles: [],
+        id: 0,
+        createdAt: "",
       });
       this.controllersStrings.push("");
       this.allowedRolesStrings.push("");
