@@ -5,6 +5,7 @@ module.exports = {
     "^.+\\.vue$": "@vue/vue3-jest",
   },
   moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|scss|sass)$": "identity-obj-proxy",
   },
   transformIgnorePatterns: ["node_modules/(?!(axios)/)"],

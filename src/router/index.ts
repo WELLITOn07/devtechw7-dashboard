@@ -37,7 +37,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const isAuthenticated = !!sessionStorage.getItem("access_token");
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: "login" });
