@@ -30,15 +30,8 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Setup Firebase CLI
+      - name: Install Firebase Tools
         run: npm install -g firebase-tools
 
-      - name: Create Service Account Key File
-        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > ${{ github.workspace }}/service-account.json
-
-      - name: Deploy to Firebase
-        run: |
-          export GOOGLE_APPLICATION_CREDENTIALS="${{ github.workspace }}/service-account.json"
-          firebase deploy --only hosting --project devtechw7-dashboard
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/service-account.json
+      - name: Deploy Firebase
+        run: firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
