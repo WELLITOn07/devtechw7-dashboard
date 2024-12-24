@@ -8,5 +8,12 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|scss|sass)$": "identity-obj-proxy",
   },
-  transformIgnorePatterns: ["node_modules/(?!(axios)/)"],
+  transformIgnorePatterns: ["node_modules/(?!axios)"],
+  testEnvironment: "jsdom",
+  moduleFileExtensions: ["js", "jsx", "json", "ts", "tsx", "vue"],
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json'
+    }
+  }
 };

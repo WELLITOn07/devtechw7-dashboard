@@ -1,3 +1,4 @@
+/************* ✨ Codeium Command 🌟 *************/
 <template>
   <form @submit.prevent="onSubmit" class="advertisement-form w7-padding">
     <h3 class="form__title w7-subtitle montserrat-medium">
@@ -63,11 +64,15 @@
 </template>
 
 <script lang="ts">
-import { Advertisement } from "@/models/advertisement.model";
 import { defineComponent, PropType, ref, watch } from "vue";
+import { Advertisement } from "@/models/advertisement.model";
+import { vBase64Input } from "@/directives/base64-input";
 
 export default defineComponent({
   name: "AdvertisementForm",
+  directives: {
+    base64Input: vBase64Input,
+  },
   props: {
     formData: {
       type: Object as PropType<Advertisement | null>,
@@ -76,9 +81,21 @@ export default defineComponent({
   },
   emits: ["save", "preview"],
   setup(props, { emit }) {
-    const localFormData = ref({ ...props.formData });
+    const localFormData = ref<Advertisement>({
+      id: props.formData?.id ?? 0,
+      title: props.formData?.title ?? "",
+      description: props.formData?.description ?? "",
+      link: props.formData?.link ?? "",
+      image: props.formData?.image ?? "",
+    });
 
     const onSubmit = () => {
+      if (
+        !localFormData.value.title.trim() ||
+        !localFormData.value.link.trim()
+      ) {
+        return;
+      }
       emit("save", { ...localFormData.value });
     };
 
@@ -89,7 +106,13 @@ export default defineComponent({
     watch(
       () => props.formData,
       (newValue) => {
-        localFormData.value = { ...newValue };
+        localFormData.value = {
+          id: newValue?.id ?? 0,
+          title: newValue?.title ?? "",
+          description: newValue?.description ?? "",
+          link: newValue?.link ?? "",
+          image: newValue?.image ?? "",
+        };
       },
       { deep: true }
     );
@@ -196,3 +219,5 @@ export default defineComponent({
   }
 }
 </style>
+
+/****** be990643-7c4b-4cb4-9e4e-bcf74bec9a61 *******/

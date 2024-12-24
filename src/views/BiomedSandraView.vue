@@ -1,6 +1,6 @@
 <template>
   <div class="biomedsandra-view">
-    <CourseForm :data="data" @save="handleSave" />
+    <CourseForm :formData="data.data" @save="handleSave" />
   </div>
 </template>
 

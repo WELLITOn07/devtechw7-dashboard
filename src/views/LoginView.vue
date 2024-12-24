@@ -92,7 +92,8 @@ export default defineComponent({
         if (error.response) {
           this.dialogTitle = "Login Error";
           this.dialogMessage =
-            error.response.data.message || "Failed to login. Please try again.";
+            error.response?.data?.message ||
+            "Failed to login. Please try again.";
         } else {
           this.dialogTitle = "Unexpected Error";
           this.dialogMessage =

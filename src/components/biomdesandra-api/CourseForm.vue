@@ -220,21 +220,23 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Course, Subject } from "@/models/biomedsandra-api.model";
-import {
-  fetchCourses,
-  createCourse,
-  updateCourse,
-  deleteCourse,
-} from "@/services/CourseService";
-import { addCurrencyPrefix } from "@/utils/add-currency-prefix";
 import LoadingDialog from "@/components/LoadingDialog.vue";
+import * as CourseService from "@/services/CourseService";
 
 export default defineComponent({
   name: "CourseForm",
-  components: { LoadingDialog },
+  components: {
+    LoadingDialog,
+  },
+  props: {
+    formData: {
+      type: Array as () => Course[],
+      required: true,
+    },
+  },
+  emits: ["update:formData", "save"],
   data() {
     return {
-      formData: [] as Course[],
       existingCourseIds: new Set<string>() as Set<string>,
       loading: false as boolean,
       loadingMessage: "" as string,
@@ -247,59 +249,72 @@ export default defineComponent({
   },
   methods: {
     formatCurrency(value: string) {
-      return addCurrencyPrefix(value);
+      const cleanValue = value.replace(/[^\d]/g, "");
+      const parts = cleanValue.split("");
+      const result = [];
+      for (let i = parts.length - 1, count = 0; i >= 0; i--, count++) {
+        if (count > 0 && count % 3 === 0) {
+          result.unshift(".");
+        }
+        result.unshift(parts[i]);
+      }
+      return result.join("");
     },
     toggleLoading(state: boolean, message = "Loading...") {
-      this.loadingMessage = message;
       this.loading = state;
+      this.loadingMessage = message;
     },
     async loadCourses() {
       try {
-        const courses = await fetchCourses();
-        this.formData = courses.map((course) => ({
+        const courses = await CourseService.fetchCourses();
+        const formattedCourses = (courses || []).map((course) => ({
           ...course,
-          subjects: course.subjects.map((subject) => ({
+          subjects: (course.subjects || []).map((subject) => ({
             ...subject,
-            topicsString: subject.topics.join(", "),
+            topicsString: subject.topics ? subject.topics.join(", ") : "",
           })),
         }));
-        this.existingCourseIds = new Set(courses.map((course) => course.id));
+        this.$emit("update:formData", formattedCourses);
+        formattedCourses.forEach((course) => {
+          this.existingCourseIds.add(course.id);
+        });
       } catch (error) {
         console.error("Error loading courses:", error);
+        this.$emit("update:formData", []);
       }
     },
     async handleSaveAll() {
+      if (!this.formData.length) return;
+
       this.toggleLoading(true, "Saving courses...");
       try {
         for (const course of this.formData) {
-          course.price = {
-            original: String(course.price.original),
-            discounted: String(course.price.discounted),
+          const formattedCourse = {
+            ...course,
+            subjects: course.subjects.map((subject) => ({
+              ...subject,
+              topics: subject.topicsString
+                ? subject.topicsString.split(",").map((t) => t.trim())
+                : [],
+            })),
           };
-          course.subjects = course.subjects.map((subject) => ({
-            ...subject,
-            topics: subject.topicsString
-              ? subject.topicsString.split(",").map((t) => t.trim())
-              : [],
-          }));
+
           if (this.existingCourseIds.has(course.id)) {
-            this.toggleLoading(true, `Updating course: ${course.title}...`);
-            await updateCourse(course.id, course);
+            await CourseService.updateCourse(course.id, formattedCourse);
           } else {
-            this.toggleLoading(true, `Creating new course: ${course.title}...`);
-            const createdCourse = await createCourse(course);
-            this.existingCourseIds.add(createdCourse.id);
+            await CourseService.createCourse(formattedCourse);
+            this.existingCourseIds.add(course.id);
           }
         }
-        await this.loadCourses();
+        this.$emit("update:formData", this.formData);
+        this.$emit("save");
       } catch (error) {
         console.error("Error saving courses:", error);
-      } finally {
-        this.toggleLoading(false);
       }
+      this.toggleLoading(false);
     },
     addCourse() {
-      this.formData.push({
+      const newCourse: Course = {
         id: "",
         title: "",
         description: "",
@@ -309,148 +324,171 @@ export default defineComponent({
         price: { original: "", discounted: "" },
         subjects: [],
         works: [],
-      });
+      };
+      this.$emit("update:formData", [...this.formData, newCourse]);
     },
     addSubject(courseIndex: number) {
-      this.formData[courseIndex].subjects.push({
+      const updatedFormData = [...this.formData];
+      updatedFormData[courseIndex].subjects.push({
         category: "",
         topics: [],
         topicsString: "",
       });
+      this.$emit("update:formData", updatedFormData);
     },
     removeSubject(courseIndex: number, subjectIndex: number) {
-      this.formData[courseIndex].subjects.splice(subjectIndex, 1);
+      const updatedFormData = [...this.formData];
+      updatedFormData[courseIndex].subjects.splice(subjectIndex, 1);
+      this.$emit("update:formData", updatedFormData);
     },
     updateTopicsArray(subject: Subject) {
-      subject.topics = subject.topicsString
-        ? subject.topicsString.split(",").map((t) => t.trim())
-        : [];
+      if (subject.topicsString) {
+        subject.topics = subject.topicsString.split(",").map((t) => t.trim());
+      } else {
+        subject.topics = [];
+      }
     },
     addWork(courseIndex: number) {
-      this.formData[courseIndex].works.push({
+      const updatedFormData = [...this.formData];
+      updatedFormData[courseIndex].works.push({
         title: "",
         url: "",
       });
+      this.$emit("update:formData", updatedFormData);
     },
     removeWork(courseIndex: number, workIndex: number) {
-      this.formData[courseIndex].works.splice(workIndex, 1);
+      const updatedFormData = [...this.formData];
+      updatedFormData[courseIndex].works.splice(workIndex, 1);
+      this.$emit("update:formData", updatedFormData);
     },
     async removeCourse(courseId: string, courseIndex: number) {
-      this.toggleLoading(true, `Deleting course with ID: ${courseId}...`);
+      this.toggleLoading(true, "Deleting course...");
       try {
         if (this.existingCourseIds.has(courseId)) {
-          await deleteCourse(courseId);
+          await CourseService.deleteCourse(courseId);
           this.existingCourseIds.delete(courseId);
         }
-        this.formData.splice(courseIndex, 1);
+        const updatedFormData = [...this.formData];
+        updatedFormData.splice(courseIndex, 1);
+        this.$emit("update:formData", updatedFormData);
       } catch (error) {
-        console.error(`Failed to delete course with ID ${courseId}:`, error);
-      } finally {
-        this.toggleLoading(false);
+        console.error("Error deleting course:", error);
       }
+      this.toggleLoading(false);
     },
   },
 });
 </script>
 
 <style scoped lang="scss">
-@import "@/styles/_variables.scss";
-@import "@/styles/_mixins.scss";
-
 .course-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background-color: $oxford-blue;
-  border-radius: 8px;
+  background-color: var(--w7-background-color);
+  color: var(--w7-text-color);
   padding: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
 
-  .form__title {
-    color: $white;
-    margin-bottom: 12px;
+.form {
+  &__title {
+    margin-bottom: 24px;
   }
 
-  .form__section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  &__section {
+    margin-bottom: 24px;
     padding: 16px;
-    border: 1px solid $yale-blue;
+    border: 1px solid var(--w7-border-color);
     border-radius: 8px;
-    background-color: $black;
   }
 
-  .form__group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  &__group {
+    margin-bottom: 16px;
+  }
 
-    .form__label {
-      font-size: 14px;
-      font-weight: bold;
-      color: $white;
+  &__label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
 
-      &.form__label--text-danger {
-        color: $error;
-      }
-
-      &__index {
-        color: $mikado-yellow;
-      }
+    &--text-danger {
+      color: var(--w7-error-color);
     }
 
-    .form__input {
-      padding: 10px;
-      border-radius: 4px;
-      border: 1px solid $yale-blue;
-      background-color: $black;
-      color: $white;
-
-      &.form__textarea {
-        height: 80px;
-        resize: none;
-      }
+    &__index {
+      margin-bottom: 16px;
+      font-weight: 500;
     }
   }
 
-  .form__button {
-    padding: 12px 24px;
+  &__input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--w7-border-color);
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 14px;
 
-    &.btn-primary {
-      background-color: $primary;
-      color: $white;
-
-      &:hover {
-        background-color: darken($primary, 10%);
-      }
+    &:focus {
+      outline: none;
+      border-color: var(--w7-primary-color);
     }
 
-    &.btn-secondary {
-      background-color: $secondary;
-
-      &:hover {
-        background-color: darken($secondary, 10%);
-      }
+    &:disabled {
+      background-color: var(--w7-disabled-color);
+      cursor: not-allowed;
     }
+  }
 
-    &.btn-danger {
-      background-color: $error;
+  &__textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
 
-      &:hover {
-        background-color: darken($error, 10%);
-      }
+  &__button {
+    margin-top: 8px;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+  }
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &.btn-primary {
+    background-color: var(--w7-primary-color);
+    color: var(--w7-white);
+
+    &:hover {
+      background-color: var(--w7-primary-dark-color);
     }
+  }
 
-    &.btn-success {
-      background-color: $success;
+  &.btn-secondary {
+    background-color: var(--w7-secondary-color);
 
-      &:hover {
-        background-color: darken($success, 10%);
-      }
+    &:hover {
+      background-color: var(--w7-secondary-dark-color);
     }
+  }
+
+  &.btn-danger {
+    background-color: var(--w7-error-color);
+    color: var(--w7-white);
+
+    &:hover {
+      background-color: var(--w7-error-dark-color);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 </style>

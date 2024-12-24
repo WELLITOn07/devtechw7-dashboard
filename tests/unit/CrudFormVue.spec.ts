@@ -40,8 +40,16 @@ describe("CrudForm.vue", () => {
       props: {
         data: {
           data: [
-            { id: 2, title: "Biology 101", controllers: [], allowedRoles: [] },
-          ],
+            { 
+              id: 2, 
+              title: "Biology 101",
+              description: "Introduction to Biology",
+              price: "100.00",
+              subjects: [],
+              works: [],
+              formData: [] 
+            }
+          ]
         },
         name: ControllerBiomedsandraApi.COURSES,
       },
@@ -79,19 +87,37 @@ describe("CrudForm.vue", () => {
       },
     });
 
+    // Wait for initial component mount
     await wrapper.vm.$nextTick();
     expect(wrapper.findComponent(DevTechW7View).exists()).toBe(true);
 
+    // Change props
     await wrapper.setProps({
       name: ControllerBiomedsandraApi.COURSES,
       data: {
         data: [
-          { id: 2, title: "Biology 101", controllers: [], allowedRoles: [] },
+          { 
+            id: "2",
+            title: "Biology 101",
+            description: "Introduction to Biology",
+            type: "course",
+            link: "https://example.com/biology",
+            price: {
+              original: "100.00",
+              discounted: "80.00"
+            },
+            subjects: [],
+            works: []
+          }
         ],
       },
     });
 
+    // Wait for component to update
     await wrapper.vm.$nextTick();
+    // Add another tick to ensure all updates are processed
+    await wrapper.vm.$nextTick();
+    
     expect(wrapper.findComponent(BiomedSandraView).exists()).toBe(true);
   });
 });

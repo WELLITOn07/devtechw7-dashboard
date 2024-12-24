@@ -19,21 +19,23 @@
 </style>
 
 <script lang="ts">
-/* eslint-disable */
-import { defineComponent, PropType, ref, watch } from "vue";
+import { defineComponent, markRaw, ref, watch } from "vue";
 import {
   ControllerDevTechW7,
   ControllerBiomedsandraApi,
 } from "@/enums/controller-type.enum";
-import DevTechW7View from "@/views/DevTechW7View.vue";
 import BiomedSandraView from "@/views/BiomedSandraView.vue";
+import DevTechW7View from "@/views/DevTechW7View.vue";
 
 export default defineComponent({
   name: "CrudForm",
-  components: { DevTechW7View, BiomedSandraView },
+  components: {
+    BiomedSandraView: markRaw(BiomedSandraView),
+    DevTechW7View: markRaw(DevTechW7View),
+  },
   props: {
     data: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as () => any,
       required: true,
       default: () => ({}),
     },
