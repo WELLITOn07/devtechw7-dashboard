@@ -19,21 +19,25 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch } from "vue";
+import { defineComponent, markRaw, ref, watch } from "vue";
 import {
   ControllerDevTechW7,
   ControllerBiomedsandraApi,
 } from "@/enums/controller-type.enum";
-import DevTechW7View from "@/views/DevTechW7View.vue";
 import BiomedSandraView from "@/views/BiomedSandraView.vue";
+import DevTechW7View from "@/views/DevTechW7View.vue";
 
 export default defineComponent({
   name: "CrudForm",
-  components: { DevTechW7View, BiomedSandraView },
+  components: {
+    BiomedSandraView: markRaw(BiomedSandraView),
+    DevTechW7View: markRaw(DevTechW7View),
+  },
   props: {
     data: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as () => any,
       required: true,
+      default: () => ({}),
     },
     name: {
       type: String,
@@ -49,10 +53,15 @@ export default defineComponent({
     watch(
       () => props.name,
       (newValue) => {
+        if (!newValue) {
+          crudFormComponent.value = null;
+          return;
+        }
+
         switch (newValue) {
           case ControllerDevTechW7.APPLICATION:
-          case ControllerDevTechW7.ACCESS_RULES:
           case ControllerDevTechW7.USER:
+          case ControllerDevTechW7.ACCESS_RULES:
             crudFormComponent.value = DevTechW7View;
             break;
           case ControllerBiomedsandraApi.COURSES:

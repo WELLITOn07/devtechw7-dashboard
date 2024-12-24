@@ -1,38 +1,33 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
-import LoginView from "@/views/LoginView.vue";
-import ManageControllersView from "@/views/ManageControllersView.vue";
-import AnalyticsDashboard from "@/views/AnalyticsDashboard.vue";
-import AdvertisementCentralView from "@/views/AdvertisementCentralView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "home",
-    component: HomeView,
+    component: () => import("@/views/HomeView.vue"),
     meta: { requiresAuth: true },
   },
   {
     path: "/login",
     name: "login",
-    component: LoginView,
+    component: () => import("@/views/LoginView.vue"),
   },
   {
     path: "/manage/:name",
     name: "manage-controllers",
-    component: ManageControllersView,
+    component: () => import("@/views/ManageControllersView.vue"),
     meta: { requiresAuth: true },
   },
   {
     path: "/analytics",
     name: "analytics-dashboard",
-    component: AnalyticsDashboard,
+    component: () => import("@/views/AnalyticsDashboard.vue"),
     meta: { requiresAuth: true },
   },
   {
     path: "/advertisements",
     name: "advertisement-central",
-    component: AdvertisementCentralView,
+    component: () => import("@/views/AdvertisementCentralView.vue"),
     meta: { requiresAuth: true },
   },
 ];
@@ -42,7 +37,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const isAuthenticated = !!sessionStorage.getItem("access_token");
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: "login" });

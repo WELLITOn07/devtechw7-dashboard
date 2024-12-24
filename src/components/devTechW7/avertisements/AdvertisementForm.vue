@@ -1,3 +1,4 @@
+/************* ✨ Codeium Command 🌟 *************/
 <template>
   <form @submit.prevent="onSubmit" class="advertisement-form w7-padding">
     <h3 class="form__title w7-subtitle montserrat-medium">
@@ -5,24 +6,42 @@
     </h3>
     <div class="form__group">
       <label for="title" class="form__label">Title</label>
-      <input id="title" v-model="localFormData.title" type="text" class="form__input"
-        placeholder="Enter advertisement title" required />
+      <input
+        id="title"
+        v-model="localFormData.title"
+        type="text"
+        class="form__input"
+        placeholder="Enter advertisement title"
+        required />
     </div>
 
     <div class="form__group">
       <label for="description" class="form__label">Description</label>
-      <textarea id="description" v-model="localFormData.description" class="form__input form__textarea"
+      <textarea
+        id="description"
+        v-model="localFormData.description"
+        class="form__input form__textarea"
         placeholder="Enter advertisement description"></textarea>
     </div>
 
     <div class="form__group">
       <label for="link" class="form__label">Link</label>
-      <input id="link" v-model="localFormData.link" type="url" class="form__input" placeholder="Enter URL" required />
+      <input
+        id="link"
+        v-model="localFormData.link"
+        type="url"
+        class="form__input"
+        placeholder="Enter URL"
+        required />
     </div>
 
     <div class="form__group">
       <label for="image" class="form__label">Image (Base64)</label>
-      <textarea id="image" v-model="localFormData.image" v-base64-input class="form__input form__textarea"
+      <textarea
+        id="image"
+        v-model="localFormData.image"
+        v-base64-input
+        class="form__input form__textarea"
         placeholder="Paste base64 image here"></textarea>
     </div>
 
@@ -34,7 +53,10 @@
       <button type="submit" class="form__button btn btn-success">
         {{ localFormData.id ? "Update" : "Create" }}
       </button>
-      <button type="button" class="form__button btn btn-primary" @click="onPreview">
+      <button
+        type="button"
+        class="form__button btn btn-primary"
+        @click="onPreview">
         Preview
       </button>
     </div>
@@ -42,11 +64,15 @@
 </template>
 
 <script lang="ts">
-import { Advertisement } from "@/models/advertisement.model";
 import { defineComponent, PropType, ref, watch } from "vue";
+import { Advertisement } from "@/models/advertisement.model";
+import { vBase64Input } from "@/directives/base64-input";
 
 export default defineComponent({
   name: "AdvertisementForm",
+  directives: {
+    base64Input: vBase64Input,
+  },
   props: {
     formData: {
       type: Object as PropType<Advertisement | null>,
@@ -55,9 +81,21 @@ export default defineComponent({
   },
   emits: ["save", "preview"],
   setup(props, { emit }) {
-    const localFormData = ref({ ...props.formData });
+    const localFormData = ref<Advertisement>({
+      id: props.formData?.id ?? 0,
+      title: props.formData?.title ?? "",
+      description: props.formData?.description ?? "",
+      link: props.formData?.link ?? "",
+      image: props.formData?.image ?? "",
+    });
 
     const onSubmit = () => {
+      if (
+        !localFormData.value.title.trim() ||
+        !localFormData.value.link.trim()
+      ) {
+        return;
+      }
       emit("save", { ...localFormData.value });
     };
 
@@ -68,7 +106,13 @@ export default defineComponent({
     watch(
       () => props.formData,
       (newValue) => {
-        localFormData.value = { ...newValue };
+        localFormData.value = {
+          id: newValue?.id ?? 0,
+          title: newValue?.title ?? "",
+          description: newValue?.description ?? "",
+          link: newValue?.link ?? "",
+          image: newValue?.image ?? "",
+        };
       },
       { deep: true }
     );
@@ -122,24 +166,24 @@ export default defineComponent({
     }
   }
 
-    .link-encode {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background-color: $primary;
-      color: $white;
-      text-decoration: none;
-      font-size: 16px;
-      width: 100px;
-  
-      &:hover {
-        background-color: darken($primary, 10%);
-      }
-  
-      i {
-        margin-left: 4px;
-      }
+  .link-encode {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: $primary;
+    color: $white;
+    text-decoration: none;
+    font-size: 16px;
+    width: 100px;
+
+    &:hover {
+      background-color: darken($primary, 10%);
     }
+
+    i {
+      margin-left: 4px;
+    }
+  }
 
   .form__actions {
     display: flex;
@@ -175,3 +219,5 @@ export default defineComponent({
   }
 }
 </style>
+
+/****** be990643-7c4b-4cb4-9e4e-bcf74bec9a61 *******/

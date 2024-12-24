@@ -72,6 +72,9 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: {
+    save: (data: AccessRule[]) => true,
+  },
   data() {
     return {
       formData: JSON.parse(JSON.stringify(this.data.data)),
@@ -96,6 +99,8 @@ export default defineComponent({
           .split(",")
           .map((r) => r.trim());
       });
+
+      console.log("Data being emitted:", this.formData);
       this.$emit("save", this.formData);
     },
     addAccessRule() {
