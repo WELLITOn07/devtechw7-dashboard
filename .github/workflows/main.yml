@@ -33,5 +33,10 @@ jobs:
       - name: Install Firebase Tools
         run: npm install -g firebase-tools
 
+      - name: Configure Firebase Credentials
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > firebase-credentials.json
+
       - name: Deploy Firebase
-        run: firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-credentials.json
+        run: firebase deploy --only hosting
