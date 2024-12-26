@@ -1,7 +1,9 @@
 export interface Subject {
+  id?: number;
   category: string;
   topics: string[];
-  topicsString?: string;
+  topicsText?: string;
+  courseId?: string;
 }
 
 export interface Work {
@@ -24,4 +26,5 @@ export interface Course {
   price: Price;
   subjects: Subject[];
   works: Work[];
+  showPreview?: boolean;
 }
