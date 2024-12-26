@@ -383,8 +383,7 @@
     v-model:visible="showAlert"
     :title="alertTitle"
     :message="alertMessage"
-    @close="showAlert = false"
-  />
+    @close="showAlert = false" />
   <ConfirmationDialog
     v-model:visible="showSaveConfirmation"
     title="Save Changes"
@@ -583,7 +582,7 @@ export default defineComponent({
         await Promise.all(updatePromises);
         this.toggleLoading(false);
         this.showSaveConfirmation = false;
-        
+
         this.toggleLoading(true, "Atualizando lista de cursos...");
         await this.loadCourses();
       } catch (error) {
@@ -660,7 +659,7 @@ export default defineComponent({
         );
         return;
       }
-      
+
       subject.topics.push(this.newTopic.trim());
       this.newTopic = "";
     },
@@ -692,7 +691,7 @@ export default defineComponent({
           this.toggleLoading(true, "Excluindo curso...");
           await deleteCourse(this.courseToDelete.id);
           this.toggleLoading(false);
-          
+
           this.toggleLoading(true, "Atualizando lista de cursos...");
           await this.loadCourses();
         } else {

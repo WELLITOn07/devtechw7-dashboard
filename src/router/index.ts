@@ -14,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/login",
+    path: "/auth/login",
     name: "login",
     component: LoginView,
   },
@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory("/"),
   routes,
 });
 
