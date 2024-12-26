@@ -19,10 +19,6 @@ const routes: Array<RouteRecordRaw> = [
     component: LoginView,
   },
   {
-    path: "/auth/login",
-    redirect: { name: "login" },
-  },
-  {
     path: "/courses",
     name: "courses",
     component: CoursesView,
