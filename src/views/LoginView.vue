@@ -79,6 +79,7 @@ export default defineComponent({
     const handleLogin = async () => {
       loading.value = true;
       try {
+        console.log(process.env.VUE_APP_API_URL);
         const response = await axios.post<LoginResponse>(
           `${process.env.VUE_APP_API_URL}/auth/login`,
           {
