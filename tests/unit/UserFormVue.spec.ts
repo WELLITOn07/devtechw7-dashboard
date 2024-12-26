@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { saveUsers, updateUser, deleteUser } from "@/services/usersService";
+import { saveUsers, updateUser, deleteUser } from "@/services/UsersService";
 import { User } from "@/models/user.model";
 import UserForm from "@/components/devTechW7/UserForm.vue";
 

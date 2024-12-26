@@ -97,7 +97,7 @@
 import { defineComponent, PropType, ref } from "vue";
 import AlertDialog from "@/components/AlertDialog.vue";
 import { User } from "@/models/user.model";
-import { saveUsers, updateUser, deleteUser } from "@/services/usersService";
+import { saveUsers, updateUser, deleteUser } from "@/services/UsersService";
 
 export default defineComponent({
   name: "UsersForm",
