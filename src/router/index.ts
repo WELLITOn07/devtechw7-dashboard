@@ -47,8 +47,9 @@ router.beforeEach((to, _, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = !!sessionStorage.getItem("access_token");
 
-  if (isAuthenticated && !authStore.isAuthenticated) {
-    authStore.setAuthenticated(true);
+  // Update auth store state to match sessionStorage
+  if (isAuthenticated !== authStore.isAuthenticated) {
+    authStore.setAuthenticated(isAuthenticated);
   }
 
   if (to.meta.requiresAuth && !isAuthenticated) {

@@ -54,7 +54,11 @@ export default defineComponent({
   name: "AnalyticsDashboard",
   components: { AnalyticsEventCard, ConfirmationDialog, LoadingDialog },
   setup() {
-    const { events, isLoading: serviceLoading, deleteAll } = useAnalyticsEvents();
+    const {
+      events,
+      isLoading: serviceLoading,
+      deleteAll,
+    } = useAnalyticsEvents();
     const showDialog = ref(false);
     const isLoading = ref(false);
     const loadingMessage = ref("");
@@ -79,7 +83,7 @@ export default defineComponent({
       isLoading.value = true;
       loadingMessage.value = "Deleting all events...";
       errorMessage.value = "";
-      
+
       try {
         await deleteAll();
         loadingMessage.value = "Events deleted successfully!";

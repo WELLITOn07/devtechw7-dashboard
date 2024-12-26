@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import AppHeader from "@/components/Header.vue";
 import { useAuthStore } from "@/stores/auth";
 
@@ -18,7 +18,9 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore();
 
-    return { isAuthenticated: authStore.isAuthenticated };
+    const isAuthenticated = computed(() => authStore.isAuthenticated);
+
+    return { isAuthenticated };
   },
 });
 </script>
