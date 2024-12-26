@@ -111,41 +111,53 @@ export default defineComponent({
   color: $white;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
 }
 
 .dashboard-title {
   text-align: center;
+  margin-bottom: 2rem;
 }
 
 .no-events-message {
   text-align: center;
-  margin: 32px 0;
+  margin: 3rem 0;
   height: auto;
+  width: 100%;
 }
 
 .application-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 2rem;
   justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .application-card {
   @include Applicationcard;
   width: 100%;
   max-width: 600px;
+  margin: 0 auto;
 }
 
 .application-title {
   color: $white;
   font-size: 24px;
-  margin-bottom: 16px;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .events-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
+  width: 100%;
 }
 
 .delete-btn {
@@ -154,6 +166,7 @@ export default defineComponent({
   align-self: center;
   padding: 12px 24px;
   font-size: 18px;
+  margin-top: 2rem;
 
   &:hover {
     cursor: pointer;

@@ -387,6 +387,9 @@ export default defineComponent({
 @import "@/styles/_mixins.scss";
 
 .course-form {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
@@ -403,6 +406,19 @@ export default defineComponent({
     border: 1px solid $yale-blue;
     border-radius: 8px;
     background-color: $black;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 767px) {
+    padding: 8px;
+    
+    .form__section {
+      padding: 12px;
+      margin: 0 8px;
+      width: calc(100% - 16px);
+    }
   }
 
   .form__group {

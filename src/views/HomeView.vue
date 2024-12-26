@@ -1,26 +1,31 @@
 <template>
   <div class="home">
-    <AppHeader />
     <div class="content w7-margin">
       <h1 class="title">
         <span class="animate-text montserrat-bold">DevTechW7</span>
         <span class="animate-text delay-1 montserrat-bold">Dashboard</span>
       </h1>
-      
+
       <div class="features w7-space-between">
         <div class="feature animate-up delay-2">
           <h2 class="roboto-medium">Cursos</h2>
-          <p class="roboto-light">Gerencie seus cursos e conteúdos educacionais com facilidade.</p>
+          <p class="roboto-light">
+            Gerencie seus cursos e conteúdos educacionais com facilidade.
+          </p>
         </div>
-        
+
         <div class="feature animate-up delay-3">
           <h2 class="roboto-medium">Analytics</h2>
-          <p class="roboto-light">Acompanhe métricas e insights importantes do seu negócio.</p>
+          <p class="roboto-light">
+            Acompanhe métricas e insights importantes do seu negócio.
+          </p>
         </div>
-        
+
         <div class="feature animate-up delay-4">
           <h2 class="roboto-medium">Propagandas</h2>
-          <p class="roboto-light">Gerencie suas campanhas publicitárias de forma eficiente.</p>
+          <p class="roboto-light">
+            Gerencie suas campanhas publicitárias de forma eficiente.
+          </p>
         </div>
       </div>
     </div>
@@ -29,11 +34,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import AppHeader from "@/components/Header.vue";
 
 export default defineComponent({
   name: "HomeView",
-  components: { AppHeader },
 });
 </script>
 
@@ -63,28 +66,37 @@ export default defineComponent({
 }
 
 .home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  background-color: $oxford-blue;
-  color: $white;
 }
 
 .content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 6rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
   text-align: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .title {
   margin-bottom: 6rem;
   font-size: 4.5rem;
   color: $mikado-yellow;
-  
+
   .animate-text {
     display: inline-block;
     animation: slideIn 0.8s ease forwards;
     opacity: 0;
-    
+
     &.delay-1 {
       animation-delay: 0.3s;
       margin-left: 1.5rem;
@@ -103,22 +115,22 @@ export default defineComponent({
   background: rgba($oxford-blue, 0.6);
   padding: 3rem;
   border-radius: 12px;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
   opacity: 0;
   border: 1px solid rgba($mikado-yellow, 0.1);
-  
+
   &:hover {
     transform: translateY(-5px);
     background: rgba($oxford-blue, 0.8);
     border-color: rgba($mikado-yellow, 0.3);
   }
-  
+
   h2 {
     color: $mikado-yellow;
     margin-bottom: 1.5rem;
     font-size: 2rem;
   }
-  
+
   p {
     color: $white;
     line-height: 1.8;
@@ -129,25 +141,23 @@ export default defineComponent({
 
 .animate-up {
   animation: fadeUp 0.8s ease forwards;
-  
+
   &.delay-2 {
     animation-delay: 0.6s;
   }
-  
+
   &.delay-3 {
     animation-delay: 0.9s;
   }
-  
+
   &.delay-4 {
     animation-delay: 1.2s;
   }
 }
 
-// Desktop grande (1440px e acima)
 @media (min-width: 1440px) {
   .content {
-    max-width: 1600px;
-    padding: 8rem 4rem;
+    padding: 6rem 2rem;
   }
 
   .title {
@@ -156,69 +166,67 @@ export default defineComponent({
 
   .feature {
     padding: 4rem;
-    
+
     h2 {
       font-size: 2.5rem;
     }
-    
+
     p {
       font-size: 1.4rem;
     }
   }
 }
 
-// Tablet (768px a 1024px)
 @media (max-width: 1024px) {
   .title {
     font-size: 3.5rem;
   }
-  
+
   .features {
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
   }
-  
+
   .feature {
     padding: 2rem;
-    
+
     h2 {
       font-size: 1.8rem;
     }
-    
+
     p {
       font-size: 1.1rem;
     }
   }
 }
 
-// Mobile (até 767px)
 @media (max-width: 767px) {
   .content {
-    padding: 4rem 1rem;
+    padding: 3rem 2rem;
   }
-  
+
   .title {
     font-size: 2.5rem;
     margin-bottom: 3rem;
-    
+
     .animate-text.delay-1 {
       margin-left: 0.8rem;
     }
   }
-  
+
   .features {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .feature {
     padding: 1.5rem;
-    
+
     h2 {
       font-size: 1.5rem;
       margin-bottom: 1rem;
     }
-    
+
     p {
       font-size: 1rem;
       line-height: 1.6;

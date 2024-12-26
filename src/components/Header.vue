@@ -1,7 +1,6 @@
 <template>
   <header class="app-header w7-space-between">
     <div class="app-header__left">
-      <h1 class="app-title montserrat-bold w7-title">DevTechW7</h1>
       <Navigation class="app-header__nav" />
     </div>
     <div class="app-header__right">
@@ -60,12 +59,7 @@ export default defineComponent({
 
   &__left {
     display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  &__nav {
-    margin-left: 2rem;
+    align-items: start;
   }
 
   &__right {
@@ -83,7 +77,7 @@ export default defineComponent({
   text-align: right;
 
   .user-name {
-    margin: 0;
+    margin: 5px;
     font-size: 1rem;
   }
 

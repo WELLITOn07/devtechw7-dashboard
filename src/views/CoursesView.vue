@@ -1,8 +1,10 @@
 <!-- src/views/CoursesView.vue -->
 <template>
   <div class="courses-view">
-    <h1>Manage Courses</h1>
-    <CourseForm />
+    <div class="content w7-margin">
+      <h1 class="w7-title montserrat-bold">Gerenciar Cursos</h1>
+      <CourseForm />
+    </div>
   </div>
 </template>
 
@@ -18,13 +20,42 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/styles/_variables.scss";
+
 .courses-view {
-  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #2c3e50;
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1.w7-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 1440px) {
+  .content {
+    padding: 3rem 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .content {
+    padding: 1.5rem 1rem;
+  }
 }
 </style>
