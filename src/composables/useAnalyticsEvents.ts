@@ -1,5 +1,9 @@
 import { AnalyticsEvent } from "@/models/analytics-events.model";
 import { ref, onMounted } from "vue";
+import {
+  fetchAnalyticsEvents,
+  deleteAllAnalyticsEvents,
+} from "@/services/AnalyticsService";
 
 export function useAnalyticsEvents() {
   const events = ref<AnalyticsEvent[]>([]);
@@ -8,15 +12,10 @@ export function useAnalyticsEvents() {
   const loadEvents = async () => {
     isLoading.value = true;
     try {
-      const response = await fetch(
-        "https://devtechw7-api.vercel.app/api/analytics"
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch events");
-      }
-      const data = await response.json();
+      const data = await fetchAnalyticsEvents();
       events.value = data;
     } catch (error) {
+      console.error("Failed to fetch analytics events:", error);
       events.value = [];
       throw new Error("Failed to fetch analytics events");
     } finally {
@@ -27,17 +26,10 @@ export function useAnalyticsEvents() {
   const deleteAll = async () => {
     isLoading.value = true;
     try {
-      const response = await fetch(
-        "https://devtechw7-api.vercel.app/api/analytics",
-        {
-          method: "DELETE",
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to delete events");
-      }
+      await deleteAllAnalyticsEvents();
       events.value = [];
     } catch (error) {
+      console.error("Failed to delete analytics events:", error);
       throw new Error("Failed to delete analytics events");
     } finally {
       isLoading.value = false;

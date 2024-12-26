@@ -39,6 +39,7 @@
 
     <!-- Loading Dialog -->
     <LoadingDialog :visible="isLoading" :message="loadingMessage" />
+    <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -53,10 +54,15 @@ export default defineComponent({
   name: "AnalyticsDashboard",
   components: { AnalyticsEventCard, ConfirmationDialog, LoadingDialog },
   setup() {
-    const { events, deleteAll } = useAnalyticsEvents();
+    const {
+      events,
+      isLoading: serviceLoading,
+      deleteAll,
+    } = useAnalyticsEvents();
     const showDialog = ref(false);
     const isLoading = ref(false);
     const loadingMessage = ref("");
+    const errorMessage = ref("");
 
     const groupedEvents = computed(() =>
       events.value.reduce((acc, event) => {
@@ -76,15 +82,19 @@ export default defineComponent({
       showDialog.value = false;
       isLoading.value = true;
       loadingMessage.value = "Deleting all events...";
+      errorMessage.value = "";
+
       try {
         await deleteAll();
         loadingMessage.value = "Events deleted successfully!";
       } catch (error) {
         console.error("Error deleting events:", error);
-        loadingMessage.value = "Failed to delete events. Please try again.";
+        errorMessage.value = "Failed to delete events. Please try again.";
+        loadingMessage.value = "";
       } finally {
         setTimeout(() => {
           isLoading.value = false;
+          errorMessage.value = "";
         }, 1000);
       }
     };
@@ -93,8 +103,9 @@ export default defineComponent({
       groupedEvents,
       events,
       showDialog,
-      isLoading,
+      isLoading: computed(() => isLoading.value || serviceLoading.value),
       loadingMessage,
+      errorMessage,
       showDeleteConfirmation,
       deleteAllEvents,
     };

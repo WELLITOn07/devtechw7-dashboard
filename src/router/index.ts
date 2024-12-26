@@ -4,6 +4,7 @@ import LoginView from "../views/LoginView.vue";
 import CoursesView from "../views/CoursesView.vue";
 import AnalyticsDashboard from "../views/AnalyticsDashboard.vue";
 import AdvertisementCentralView from "../views/AdvertisementCentralView.vue";
+import { useAuthStore } from "@/stores/auth";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -43,7 +44,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _, next) => {
+  const authStore = useAuthStore();
   const isAuthenticated = !!sessionStorage.getItem("access_token");
+
+  // Update auth store state to match sessionStorage
+  if (isAuthenticated !== authStore.isAuthenticated) {
+    authStore.setAuthenticated(isAuthenticated);
+  }
+
   if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: "login" });
   } else if (to.name === "login" && isAuthenticated) {

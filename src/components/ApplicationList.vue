@@ -22,7 +22,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useApplicationStore } from "@/store/application";
+import { useApplicationStore } from "@/stores/application";
 import { fetchApplications } from "@/services/ApplicationService";
 import ApplicationCard from "@/components/ApplicationCard.vue";
 import ApplicationForm from "@/components/devTechW7/ApplicationForm.vue";

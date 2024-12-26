@@ -1,4 +1,4 @@
-import { useApplicationStore } from "@/store/application";
+import { useApplicationStore } from "@/stores/application";
 import { setActivePinia, createPinia } from "pinia";
 
 describe("ApplicationStore", () => {
