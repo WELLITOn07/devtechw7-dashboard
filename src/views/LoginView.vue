@@ -45,11 +45,12 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import AlertDialog from "@/components/AlertDialog.vue";
 import LoadingButton from "@/components/LoadingButton.vue";
 import { setAuthToken, setUser } from "@/utils/get-auth-headers";
 import { useAuthStore } from "@/stores/auth";
+import { LoginResponse } from "@/models/login-response.model";
 
 export default defineComponent({
   name: "LoginView",
@@ -78,7 +79,7 @@ export default defineComponent({
     const handleLogin = async () => {
       loading.value = true;
       try {
-        const response = await axios.post(
+        const response = await axios.post<LoginResponse>(
           `${process.env.VUE_APP_API_URL}/auth/login`,
           {
             email: email.value,

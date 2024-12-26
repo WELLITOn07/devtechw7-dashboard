@@ -14,6 +14,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/home",
+    name: "home",
+    component: HomeView,
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/login",
     name: "login",
     component: LoginView,
@@ -36,12 +42,15 @@ const routes: Array<RouteRecordRaw> = [
     component: AdvertisementCentralView,
     meta: { requiresAuth: true },
   },
+  // Rota curinga para redirecionar ao Home
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: { name: "home" },
+  },
 ];
 
 const router = createRouter({
-  history: createWebHistory(
-    process.env.NODE_ENV === "production" ? "/auth" : "/"
-  ),
+  history: createWebHistory("/"),
   routes,
 });
 
