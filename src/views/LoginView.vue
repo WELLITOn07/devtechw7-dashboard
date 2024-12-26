@@ -67,7 +67,7 @@ export default defineComponent({
       loading.value = true;
       try {
         const response = await axios.post(
-          `${process.env.VUE_APP_API_URL}/auth`,
+          `${process.env.VUE_APP_API_URL}/auth/login`,
           {
             email: email.value,
             password: password.value,
