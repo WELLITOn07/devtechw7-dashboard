@@ -14,9 +14,13 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/auth/login",
+    path: "/login",
     name: "login",
     component: LoginView,
+  },
+  {
+    path: "/auth/login",
+    redirect: { name: "login" },
   },
   {
     path: "/courses",
@@ -39,7 +43,9 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory("/"),
+  history: createWebHistory(
+    process.env.NODE_ENV === "production" ? "/auth" : "/"
+  ),
   routes,
 });
 
