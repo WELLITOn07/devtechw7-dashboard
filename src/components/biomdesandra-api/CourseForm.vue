@@ -260,59 +260,65 @@ export default defineComponent({
     },
     async loadCourses() {
       try {
-        const courses = await CourseService.fetchCourses();
-        if (!courses) {
-          this.formData = [];
-          return;
-        }
-
-        const formattedCourses = courses.map((course) => ({
+        this.toggleLoading(true, "Loading courses...");
+        const response = await fetch(
+          "https://biomedsandra-api.vercel.app/api/courses"
+        );
+        const data = await response.json();
+        this.formData = data.map((course: Course) => ({
           ...course,
-          subjects: (course.subjects || []).map((subject) => ({
+          subjects: course.subjects.map((subject) => ({
             ...subject,
-            topicsString: subject.topics ? subject.topics.join(", ") : "",
+            topicsString: subject.topics.join(", "),
           })),
         }));
 
-        this.formData = formattedCourses;
-        formattedCourses.forEach((course) => {
-          if (course && course.id) {
-            this.existingCourseIds.add(course.id);
-          }
-        });
+        // Store existing course IDs
+        this.existingCourseIds = new Set(
+          data.map((course: Course) => course.id)
+        );
       } catch (error) {
-        console.error("Error loading courses:", error);
-        this.formData = [];
+        this.toggleLoading(false);
+        // Use emit to handle error in parent component
+        this.$emit("error", "Failed to load courses");
+      } finally {
+        this.toggleLoading(false);
       }
     },
     async handleSaveAll() {
-      if (!this.formData.length) return;
-
-      this.toggleLoading(true, "Saving courses...");
       try {
-        for (const course of this.formData) {
-          if (!course.id) {
-            console.error("Course ID is required");
-            continue;
+        this.toggleLoading(true, "Saving courses...");
+        const processedData = this.formData.map((course) => ({
+          ...course,
+          subjects: course.subjects.map((subject) => ({
+            ...subject,
+            topics: subject.topicsString
+              ?.split(",")
+              .map((topic) => topic.trim()),
+          })),
+        }));
+
+        const response = await fetch(
+          "https://biomedsandra-api.vercel.app/api/courses",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(processedData),
           }
+        );
 
-          const formattedCourse = {
-            ...course,
-            subjects: course.subjects.map((subject) => ({
-              ...subject,
-              topics: subject.topicsString
-                ? subject.topicsString.split(",").map((t) => t.trim())
-                : [],
-            })),
-          };
-
-          await CourseService.updateCourse(course.id, formattedCourse);
-          this.existingCourseIds.add(course.id);
+        if (!response.ok) {
+          throw new Error("Failed to save courses");
         }
+
+        this.$emit("success", "Courses saved successfully");
       } catch (error) {
-        console.error("Error saving courses:", error);
+        this.$emit("error", "Failed to save courses");
+      } finally {
+        this.toggleLoading(false);
       }
-      this.toggleLoading(false);
     },
     addCourse() {
       const timestamp = new Date().getTime();
@@ -364,19 +370,28 @@ export default defineComponent({
       this.formData = updatedFormData;
     },
     async removeCourse(courseId: string, courseIndex: number) {
-      this.toggleLoading(true, "Deleting course...");
       try {
         if (this.existingCourseIds.has(courseId)) {
-          await CourseService.deleteCourse(courseId);
-          this.existingCourseIds.delete(courseId);
+          this.toggleLoading(true, "Deleting course...");
+          const response = await fetch(
+            `https://biomedsandra-api.vercel.app/api/courses/${courseId}`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to delete course");
+          }
         }
-        const updatedFormData = [...this.formData];
-        updatedFormData.splice(courseIndex, 1);
-        this.formData = updatedFormData;
+
+        this.formData.splice(courseIndex, 1);
+        this.$emit("success", "Course deleted successfully");
       } catch (error) {
-        console.error("Error deleting course:", error);
+        this.$emit("error", "Failed to delete course");
+      } finally {
+        this.toggleLoading(false);
       }
-      this.toggleLoading(false);
     },
   },
 });
@@ -413,7 +428,7 @@ export default defineComponent({
 
   @media (max-width: 767px) {
     padding: 8px;
-    
+
     .form__section {
       padding: 12px;
       margin: 0 8px;

@@ -1,18 +1,26 @@
 <template>
   <div class="app">
-    <AppHeader />
+    <AppHeader v-if="isAuthenticated" />
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import AppHeader from "@/components/Header.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     AppHeader,
+  },
+  setup() {
+    const isAuthenticated = computed(
+      () => !!sessionStorage.getItem("access_token")
+    );
+
+    console.log("isAuthenticated", isAuthenticated);
+    return { isAuthenticated };
   },
 });
 </script>

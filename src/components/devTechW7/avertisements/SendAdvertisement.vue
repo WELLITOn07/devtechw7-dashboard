@@ -112,7 +112,6 @@ export default defineComponent({
         loadingMessage.value = "Loading applications...";
         applications.value = await fetchApplications();
       } catch (error) {
-        console.error("Error loading applications:", error);
         dialogTitle.value = "Error Loading Applications";
         dialogMessage.value =
           "An error occurred while loading the applications. Please try again.";
@@ -155,11 +154,11 @@ export default defineComponent({
     const confirmSend = async () => {
       showConfirm.value = false;
 
-      if (pendingAction.value === "all") {
+      if (pendingAction.value === "all" && selectedApplication.value) {
         loadingAll.value = true;
         try {
           await sendAdvertisementToAll(
-            selectedApplication.value!,
+            selectedApplication.value,
             props.advertisementId
           );
           dialogTitle.value = "Advertisement Sent";
@@ -167,7 +166,6 @@ export default defineComponent({
             "Advertisement sent to the selected application!";
           showDialog.value = true;
         } catch (error) {
-          console.error("Error sending advertisement to application:", error);
           dialogTitle.value = "Error Sending Advertisement";
           dialogMessage.value =
             "Failed to send advertisement to the selected application.";
@@ -188,7 +186,6 @@ export default defineComponent({
           dialogMessage.value = "Advertisement sent to the single recipient!";
           showDialog.value = true;
         } catch (error) {
-          console.error("Error sending advertisement to recipient:", error);
           dialogTitle.value = "Error Sending Advertisement";
           dialogMessage.value =
             "Failed to send advertisement to the single recipient.";

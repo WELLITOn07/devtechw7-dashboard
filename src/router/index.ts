@@ -45,7 +45,8 @@ const router = createRouter({
 router.beforeEach((to, _, next) => {
   const isAuthenticated = !!sessionStorage.getItem("access_token");
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: "login" });
+    window.location.href = "https://devtechw7-dash.web.app/login";
+    return;
   } else if (to.name === "login" && isAuthenticated) {
     next({ name: "home" });
   } else {
