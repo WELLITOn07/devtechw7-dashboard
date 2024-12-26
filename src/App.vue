@@ -6,8 +6,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent } from "vue";
 import AppHeader from "@/components/Header.vue";
+import { useAuthStore } from "@/stores/auth";
 
 export default defineComponent({
   name: "App",
@@ -15,12 +16,9 @@ export default defineComponent({
     AppHeader,
   },
   setup() {
-    const isAuthenticated = computed(
-      () => !!sessionStorage.getItem("access_token")
-    );
+    const authStore = useAuthStore();
 
-    console.log("isAuthenticated", isAuthenticated);
-    return { isAuthenticated };
+    return { isAuthenticated: authStore.isAuthenticated };
   },
 });
 </script>

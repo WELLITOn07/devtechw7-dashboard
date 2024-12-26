@@ -221,7 +221,11 @@
 import { defineComponent } from "vue";
 import { Course, Subject } from "@/models/biomedsandra-api.model";
 import LoadingDialog from "@/components/LoadingDialog.vue";
-import * as CourseService from "@/services/CourseService";
+import {
+  fetchCourses,
+  updateCourse,
+  deleteCourse,
+} from "@/services/CourseService";
 
 export default defineComponent({
   name: "CourseForm",
@@ -230,10 +234,10 @@ export default defineComponent({
   },
   data() {
     return {
-      existingCourseIds: new Set<string>(),
-      loading: false,
-      loadingMessage: "",
       formData: [] as Course[],
+      loading: false,
+      loadingMessage: "Loading...",
+      existingCourseIds: new Set<string>(),
     };
   },
   async mounted() {
@@ -242,17 +246,17 @@ export default defineComponent({
     this.toggleLoading(false);
   },
   methods: {
-    formatCurrency(value: string) {
-      const cleanValue = value.replace(/[^\d]/g, "");
-      const parts = cleanValue.split("");
-      const result = [];
-      for (let i = parts.length - 1, count = 0; i >= 0; i--, count++) {
-        if (count > 0 && count % 3 === 0) {
-          result.unshift(".");
+    formatCurrency(value: string): string {
+      if (!value) return "R$ 0,00";
+      const numericValue = value.replace(/\D/g, "");
+      const formattedValue = (Number(numericValue) / 100).toLocaleString(
+        "pt-BR",
+        {
+          style: "currency",
+          currency: "BRL",
         }
-        result.unshift(parts[i]);
-      }
-      return result.join("");
+      );
+      return formattedValue;
     },
     toggleLoading(state: boolean, message = "Loading...") {
       this.loading = state;
@@ -260,136 +264,82 @@ export default defineComponent({
     },
     async loadCourses() {
       try {
-        this.toggleLoading(true, "Loading courses...");
-        const response = await fetch(
-          "https://biomedsandra-api.vercel.app/api/courses"
-        );
-        const data = await response.json();
-        this.formData = data.map((course: Course) => ({
-          ...course,
-          subjects: course.subjects.map((subject) => ({
-            ...subject,
-            topicsString: subject.topics.join(", "),
-          })),
-        }));
-
-        // Store existing course IDs
-        this.existingCourseIds = new Set(
-          data.map((course: Course) => course.id)
-        );
+        const courses = await fetchCourses();
+        this.formData = courses;
+        this.existingCourseIds = new Set(courses.map((course) => course.id));
       } catch (error) {
-        this.toggleLoading(false);
-        // Use emit to handle error in parent component
-        this.$emit("error", "Failed to load courses");
-      } finally {
-        this.toggleLoading(false);
+        console.error("Error loading courses:", error);
       }
     },
     async handleSaveAll() {
       try {
         this.toggleLoading(true, "Saving courses...");
-        const processedData = this.formData.map((course) => ({
-          ...course,
-          subjects: course.subjects.map((subject) => ({
-            ...subject,
-            topics: subject.topicsString
-              ?.split(",")
-              .map((topic) => topic.trim()),
-          })),
-        }));
-
-        const response = await fetch(
-          "https://biomedsandra-api.vercel.app/api/courses",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(processedData),
-          }
+        const updatePromises = this.formData.map((course) =>
+          updateCourse(course.id, course)
         );
-
-        if (!response.ok) {
-          throw new Error("Failed to save courses");
-        }
-
-        this.$emit("success", "Courses saved successfully");
+        await Promise.all(updatePromises);
+        await this.loadCourses();
+        this.toggleLoading(false);
       } catch (error) {
-        this.$emit("error", "Failed to save courses");
-      } finally {
+        console.error("Error saving courses:", error);
         this.toggleLoading(false);
       }
     },
     addCourse() {
-      const timestamp = new Date().getTime();
       const newCourse: Course = {
-        id: `course_${timestamp}`,
+        id: "",
         title: "",
+        type: "",
         description: "",
         cover: "",
         link: "",
-        type: "",
-        price: { original: "", discounted: "" },
+        price: {
+          original: "R$ 0,00",
+          discounted: "R$ 0,00",
+        },
         subjects: [],
         works: [],
       };
-      this.formData = [...this.formData, newCourse];
+      this.formData.push(newCourse);
     },
     addSubject(courseIndex: number) {
-      const updatedFormData = [...this.formData];
-      updatedFormData[courseIndex].subjects.push({
+      const newSubject: Subject = {
         category: "",
         topics: [],
         topicsString: "",
-      });
-      this.formData = updatedFormData;
+      };
+      this.formData[courseIndex].subjects.push(newSubject);
     },
     removeSubject(courseIndex: number, subjectIndex: number) {
-      const updatedFormData = [...this.formData];
-      updatedFormData[courseIndex].subjects.splice(subjectIndex, 1);
-      this.formData = updatedFormData;
+      this.formData[courseIndex].subjects.splice(subjectIndex, 1);
     },
     updateTopicsArray(subject: Subject) {
       if (subject.topicsString) {
-        subject.topics = subject.topicsString.split(",").map((t) => t.trim());
-      } else {
-        subject.topics = [];
+        subject.topics = subject.topicsString
+          .split(",")
+          .map((topic) => topic.trim())
+          .filter((topic) => topic !== "");
       }
     },
     addWork(courseIndex: number) {
-      const updatedFormData = [...this.formData];
-      updatedFormData[courseIndex].works.push({
+      this.formData[courseIndex].works.push({
         title: "",
         url: "",
       });
-      this.formData = updatedFormData;
     },
     removeWork(courseIndex: number, workIndex: number) {
-      const updatedFormData = [...this.formData];
-      updatedFormData[courseIndex].works.splice(workIndex, 1);
-      this.formData = updatedFormData;
+      this.formData[courseIndex].works.splice(workIndex, 1);
     },
     async removeCourse(courseId: string, courseIndex: number) {
       try {
+        this.toggleLoading(true, "Removing course...");
         if (this.existingCourseIds.has(courseId)) {
-          this.toggleLoading(true, "Deleting course...");
-          const response = await fetch(
-            `https://biomedsandra-api.vercel.app/api/courses/${courseId}`,
-            {
-              method: "DELETE",
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Failed to delete course");
-          }
+          await deleteCourse(courseId);
         }
-
         this.formData.splice(courseIndex, 1);
-        this.$emit("success", "Course deleted successfully");
+        this.toggleLoading(false);
       } catch (error) {
-        this.$emit("error", "Failed to delete course");
-      } finally {
+        console.error("Error removing course:", error);
         this.toggleLoading(false);
       }
     },

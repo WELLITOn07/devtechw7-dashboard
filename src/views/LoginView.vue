@@ -48,7 +48,8 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import AlertDialog from "@/components/AlertDialog.vue";
 import LoadingButton from "@/components/LoadingButton.vue";
-import { setAuthToken } from "@/utils/get-auth-headers";
+import { setAuthToken, setUser } from "@/utils/get-auth-headers";
+import { useAuthStore } from "@/stores/auth";
 
 export default defineComponent({
   name: "LoginView",
@@ -58,6 +59,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const authStore = useAuthStore();
     const email = ref("");
     const password = ref("");
     const loading = ref(false);
@@ -83,8 +85,10 @@ export default defineComponent({
             password: password.value,
           }
         );
-        if (response.data.token) {
-          setAuthToken(response.data.token);
+        if (response.data.access_token) {
+          setAuthToken(response.data.access_token);
+          setUser(response.data.user);
+          authStore.setAuthenticated(true);
           dialogType.value = "success";
           dialogTitle.value = "Bem-vindo!";
           dialogMessage.value = "Login realizado com sucesso!";
