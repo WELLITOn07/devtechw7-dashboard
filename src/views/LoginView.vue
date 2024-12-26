@@ -44,14 +44,10 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import axios from "axios";
 import AlertDialog from "@/components/AlertDialog.vue";
 import LoadingButton from "@/components/LoadingButton.vue";
-
-interface LoginError {
-  code: string;
-  message: string;
-}
+import { setAuthToken } from "@/utils/get-auth-headers";
 
 export default defineComponent({
   name: "LoginView",
@@ -70,12 +66,20 @@ export default defineComponent({
     const handleLogin = async () => {
       loading.value = true;
       try {
-        const auth = getAuth();
-        await signInWithEmailAndPassword(auth, email.value, password.value);
-        router.push("/");
-      } catch (error) {
-        const loginError = error as LoginError;
-        dialogMessage.value = loginError.message;
+        const response = await axios.post(
+          `${process.env.VUE_APP_API_URL}/auth`,
+          {
+            email: email.value,
+            password: password.value,
+          }
+        );
+        if (response.data.token) {
+          setAuthToken(response.data.token);
+          router.push("/");
+        }
+      } catch (error: any) {
+        dialogMessage.value =
+          error.response?.data?.message || "Erro ao realizar login";
         showDialog.value = true;
       } finally {
         loading.value = false;
