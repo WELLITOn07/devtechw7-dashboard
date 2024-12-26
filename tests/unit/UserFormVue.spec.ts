@@ -111,8 +111,14 @@ describe("UsersForm.vue", () => {
       props: { data: mockData },
     });
 
+    // Wait for component to initialize
+    await wrapper.vm.$nextTick();
+
     const user = wrapper.vm.formData[0];
     user.name = "Failed Update";
+    
+    // Ensure rolesStrings is properly set
+    wrapper.vm.rolesStrings = mockData.data.map(user => user.rule.join(", "));
 
     await wrapper.vm.handleUpdateUser(user, 0);
 
@@ -121,4 +127,3 @@ describe("UsersForm.vue", () => {
     );
   });
 });
-
