@@ -28,16 +28,17 @@
       <LoadingButton
         :loading="loading"
         text="Login"
-        loadingText="Carregando"
-        @click="handleLogin" />
+        loadingText="Carregando..."
+        type="submit" />
     </form>
 
     <AlertDialog
       v-if="showDialog"
-      :title="dialogMessage"
+      :title="dialogTitle"
       :message="dialogMessage"
+      :type="dialogType"
       :visible="showDialog"
-      @close="showDialog = false" />
+      @close="handleDialogClose" />
   </div>
 </template>
 
@@ -62,6 +63,15 @@ export default defineComponent({
     const loading = ref(false);
     const showDialog = ref(false);
     const dialogMessage = ref("");
+    const dialogTitle = ref("");
+    const dialogType = ref("success");
+
+    const handleDialogClose = () => {
+      showDialog.value = false;
+      if (dialogType.value === "success") {
+        router.push("/");
+      }
+    };
 
     const handleLogin = async () => {
       loading.value = true;
@@ -75,9 +85,14 @@ export default defineComponent({
         );
         if (response.data.token) {
           setAuthToken(response.data.token);
-          router.push("/");
+          dialogType.value = "success";
+          dialogTitle.value = "Bem-vindo!";
+          dialogMessage.value = "Login realizado com sucesso!";
+          showDialog.value = true;
         }
       } catch (error: any) {
+        dialogType.value = "error";
+        dialogTitle.value = "Erro";
         dialogMessage.value =
           error.response?.data?.message || "Erro ao realizar login";
         showDialog.value = true;
@@ -92,7 +107,10 @@ export default defineComponent({
       loading,
       showDialog,
       dialogMessage,
+      dialogTitle,
+      dialogType,
       handleLogin,
+      handleDialogClose,
     };
   },
 });
