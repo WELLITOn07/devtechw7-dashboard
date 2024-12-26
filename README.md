@@ -124,6 +124,199 @@ Botão com feedback de carregamento.
   @click="handleSubmit"
 />
 ```
+
+## 6. **LoadingDialog.vue**
+### Descrição:
+Componente de diálogo de carregamento para feedback visual.
+
+### Propriedades (Props):
+- **visible** (Boolean): Controla a visibilidade do diálogo (obrigatório).
+- **message** (String): Mensagem a ser exibida (default: "Carregando...").
+
+### Exemplo de Uso:
+```vue
+<LoadingDialog
+  :visible="isLoading"
+  message="Processando dados..."
+/>
+```
+
+## 7. **ConfirmationDialog.vue**
+### Descrição:
+Diálogo de confirmação para ações importantes.
+
+### Propriedades (Props):
+- **visible** (Boolean): Controla a visibilidade (obrigatório).
+- **title** (String): Título do diálogo (default: "Confirmação").
+- **message** (String): Mensagem de confirmação (obrigatório).
+
+### Eventos Emitidos:
+- **confirm**: Quando a ação é confirmada.
+- **cancel**: Quando a ação é cancelada.
+
+### Exemplo de Uso:
+```vue
+<ConfirmationDialog
+  :visible="showConfirmation"
+  message="Deseja prosseguir com esta ação?"
+  @confirm="handleConfirm"
+  @cancel="handleCancel"
+/>
+```
+
+## 8. **Header.vue**
+### Descrição:
+Componente de cabeçalho da aplicação.
+
+### Funcionalidades:
+- Navegação principal
+- Logo da aplicação
+- Menu de usuário
+
+### Exemplo de Uso:
+```vue
+<Header />
+```
+
+## 9. **Navigation.vue**
+### Descrição:
+Barra de navegação lateral com menu de opções.
+
+### Funcionalidades:
+- Links de navegação
+- Controle de acesso baseado em permissões
+- Indicador de rota ativa
+
+### Exemplo de Uso:
+```vue
+<Navigation />
+```
+
+## 10. **UserForm.vue**
+### Descrição:
+Formulário para gerenciamento de usuários.
+
+### Propriedades (Props):
+- **user** (Object): Dados do usuário (opcional).
+- **editing** (Boolean): Modo de edição (default: false).
+
+### Eventos Emitidos:
+- **save**: Quando o formulário é submetido.
+
+### Exemplo de Uso:
+```vue
+<UserForm
+  :user="userData"
+  :editing="true"
+  @save="handleSave"
+/>
+```
+
+## 11. **AdvertisementForm.vue**
+### Descrição:
+Formulário para criação e edição de anúncios.
+
+### Propriedades (Props):
+- **advertisement** (Object): Dados do anúncio (opcional).
+- **editing** (Boolean): Modo de edição (default: false).
+
+### Eventos Emitidos:
+- **save**: Quando o anúncio é salvo.
+
+### Exemplo de Uso:
+```vue
+<AdvertisementForm
+  :advertisement="adData"
+  @save="handleSave"
+/>
+```
+
+## 12. **AdvertisementPreview.vue**
+### Descrição:
+Visualização prévia de anúncios.
+
+### Propriedades (Props):
+- **advertisement** (Object): Dados do anúncio para preview (obrigatório).
+
+### Exemplo de Uso:
+```vue
+<AdvertisementPreview
+  :advertisement="adData"
+/>
+```
+
+## 13. **AnalyticsEventCard.vue**
+### Descrição:
+Card para exibição de eventos analíticos.
+
+### Propriedades (Props):
+- **event** (Object): Dados do evento analítico (obrigatório).
+
+### Exemplo de Uso:
+```vue
+<AnalyticsEventCard
+  :event="eventData"
+/>
+```
+
+## 14. **AccessRulesForm.vue**
+### Descrição:
+Formulário para configuração de regras de acesso.
+
+### Propriedades (Props):
+- **rules** (Array): Lista de regras de acesso (obrigatório).
+
+### Eventos Emitidos:
+- **save**: Quando as regras são salvas.
+
+### Exemplo de Uso:
+```vue
+<AccessRulesForm
+  :rules="accessRules"
+  @save="handleSave"
+/>
+```
+
+## 15. **CourseForm.vue**
+### Descrição:
+Formulário para gerenciamento de cursos.
+
+### Propriedades (Props):
+- **course** (Object): Dados do curso (opcional).
+- **editing** (Boolean): Modo de edição (default: false).
+
+### Eventos Emitidos:
+- **save**: Quando o curso é salvo.
+
+### Exemplo de Uso:
+```vue
+<CourseForm
+  :course="courseData"
+  :editing="true"
+  @save="handleSave"
+/>
+```
+
+## 16. **SendAdvertisement.vue**
+### Descrição:
+Componente para envio de anúncios.
+
+### Propriedades (Props):
+- **advertisement** (Object): Dados do anúncio para envio (obrigatório).
+
+### Eventos Emitidos:
+- **send**: Quando o anúncio é enviado.
+- **cancel**: Quando o envio é cancelado.
+
+### Exemplo de Uso:
+```vue
+<SendAdvertisement
+  :advertisement="adData"
+  @send="handleSend"
+  @cancel="handleCancel"
+/>
+```
+
 # Configuração das Rotas
 - **/**: Página inicial (lista de aplicações).
 - **/login**: Página de login.
@@ -168,4 +361,3 @@ export async function fetchControllerData(controller: string) {
 ### Testes Unitários:
 - Localizados em **tests/.**
 - Cobrem componentes principais como **ManageControllersView** e **ApplicationList**.
-
