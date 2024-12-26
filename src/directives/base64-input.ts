@@ -1,32 +1,42 @@
 import { DirectiveBinding } from "vue";
 
+interface Base64InputElement extends HTMLInputElement {
+  _base64Handler?: (event: Event) => void;
+}
+
+interface FileReaderResult {
+  target: {
+    result: string | ArrayBuffer | null;
+  };
+}
+
 export const vBase64Input = {
-  mounted(el: HTMLInputElement, binding: DirectiveBinding) {
-    const handleChange = async (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      if (!target.files?.length) return;
+  mounted(el: Base64InputElement, binding: DirectiveBinding) {
+    const handler = (event: Event) => {
+      const input = event.target as HTMLInputElement;
+      const file = input.files?.[0];
 
-      const file = target.files[0];
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (typeof binding.value === "function") {
-          binding.value(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(file);
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e: ProgressEvent<FileReader>) => {
+          if (e.target?.result) {
+            if (typeof binding.value === "function") {
+              binding.value(e.target.result);
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      }
     };
 
-    el.addEventListener("change", handleChange);
-    // Store the handler for cleanup
-    (el as any)._base64Handler = handleChange;
+    el._base64Handler = handler;
+    el.addEventListener("change", handler);
   },
-  unmounted(el: HTMLInputElement) {
-    // Remove the stored handler
-    if ((el as any)._base64Handler) {
-      el.removeEventListener("change", (el as any)._base64Handler);
-      delete (el as any)._base64Handler;
+
+  unmounted(el: Base64InputElement) {
+    if (el._base64Handler) {
+      el.removeEventListener("change", el._base64Handler);
+      delete el._base64Handler;
     }
   },
 };

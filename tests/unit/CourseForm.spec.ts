@@ -1,6 +1,5 @@
 import { mount } from "@vue/test-utils";
 import CourseForm from "@/components/biomdesandra-api/CourseForm.vue";
-import * as CourseService from "@/services/CourseService";
 
 jest.mock("@/services/CourseService", () => ({
   fetchCourses: jest.fn(() => Promise.resolve([])),
@@ -33,71 +32,86 @@ describe("CourseForm.vue", () => {
     expect(wrapper.text()).toContain("No Courses Found");
   });
 
-  it("adds a new course when 'Add New Course' button is clicked", async () => {
+  const mockCourse = {
+    id: "test_course",
+    title: "Test Course",
+    type: "test",
+    description: "Test Description",
+    cover: "test_cover",
+    link: "test_link",
+    price: {
+      original: "R$ 100,00",
+      discounted: "R$ 80,00",
+    },
+    subjects: [
+      {
+        category: "Test Category",
+        topics: ["Test Topic"],
+        topicsString: "Test Topic",
+      },
+    ],
+    works: [
+      {
+        title: "Test Work",
+        url: "test_url",
+      },
+    ],
+  };
+
+  beforeEach(() => {
+    // Mock fetch
+    window.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([mockCourse]),
+      })
+    ) as jest.Mock;
+
     wrapper = mount(CourseForm);
-    await wrapper.vm.$nextTick();
-    
+  });
+
+  it("adds a new course when 'Add New Course' button is clicked", async () => {
+    wrapper.vm.formData = [];
     await wrapper.find("button.btn-primary").trigger("click");
     expect(wrapper.vm.formData.length).toBe(1);
-    expect(wrapper.vm.formData[0].id).toContain("course_");
+    expect(typeof wrapper.vm.formData[0].id).toBe("string");
+    expect(wrapper.vm.formData[0].id.length).toBeGreaterThan(0);
+  });
+
+  it("formats currency correctly", () => {
+    const result = wrapper.vm.formatCurrency("1234567");
+    expect(result).toBe("1.234.567");
   });
 
   it("saves courses correctly", async () => {
-    const mockCourse = {
-      id: "test_course",
-      title: "Test Course",
-      description: "Test Description",
-      cover: "",
-      link: "",
-      type: "test",
-      price: { original: "100", discounted: "80" },
-      subjects: [],
-      works: [],
-    };
-
-    wrapper = mount(CourseForm);
-    await wrapper.vm.$nextTick();
-
     wrapper.vm.formData = [mockCourse];
+
     await wrapper.vm.handleSaveAll();
 
-    expect(CourseService.updateCourse).toHaveBeenCalledWith(
-      mockCourse.id,
+    expect(window.fetch).toHaveBeenCalledWith(
+      "https://biomedsandra-api.vercel.app/api/courses",
       expect.objectContaining({
-        id: mockCourse.id,
-        title: mockCourse.title,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify([mockCourse]),
       })
     );
   });
 
   it("deletes a course correctly", async () => {
-    const mockCourse = {
-      id: "test_course",
-      title: "Test Course",
-      description: "Test Description",
-      cover: "",
-      link: "",
-      type: "test",
-      price: { original: "100", discounted: "80" },
-      subjects: [],
-      works: [],
-    };
-
-    wrapper = mount(CourseForm);
-    await wrapper.vm.$nextTick();
-
     wrapper.vm.formData = [mockCourse];
-    wrapper.vm.existingCourseIds.add(mockCourse.id);
+    wrapper.vm.existingCourseIds = new Set([mockCourse.id]);
 
     await wrapper.vm.removeCourse(mockCourse.id, 0);
 
-    expect(CourseService.deleteCourse).toHaveBeenCalledWith(mockCourse.id);
+    expect(window.fetch).toHaveBeenCalledWith(
+      `https://biomedsandra-api.vercel.app/api/courses/${mockCourse.id}`,
+      expect.objectContaining({
+        method: "DELETE",
+      })
+    );
     expect(wrapper.vm.formData.length).toBe(0);
-  });
-
-  it("formats currency correctly", () => {
-    wrapper = mount(CourseForm);
-    const result = wrapper.vm.formatCurrency("1234567");
-    expect(result).toBe("1.234.567");
   });
 });

@@ -1,9 +1,5 @@
-import { ref, onMounted } from "vue";
-import {
-  fetchAnalyticsEvents,
-  deleteAllAnalyticsEvents,
-} from "@/services/AnalyticsService";
 import { AnalyticsEvent } from "@/models/analytics-events.model";
+import { ref, onMounted } from "vue";
 
 export function useAnalyticsEvents() {
   const events = ref<AnalyticsEvent[]>([]);
@@ -12,9 +8,17 @@ export function useAnalyticsEvents() {
   const loadEvents = async () => {
     isLoading.value = true;
     try {
-      events.value = await fetchAnalyticsEvents();
+      const response = await fetch(
+        "https://devtechw7-api.vercel.app/api/analytics"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch events");
+      }
+      const data = await response.json();
+      events.value = data;
     } catch (error) {
-      console.error("Error fetching analytics events:", error);
+      events.value = [];
+      throw new Error("Failed to fetch analytics events");
     } finally {
       isLoading.value = false;
     }
@@ -23,10 +27,18 @@ export function useAnalyticsEvents() {
   const deleteAll = async () => {
     isLoading.value = true;
     try {
-      await deleteAllAnalyticsEvents();
+      const response = await fetch(
+        "https://devtechw7-api.vercel.app/api/analytics",
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete events");
+      }
       events.value = [];
     } catch (error) {
-      console.error("Error deleting all events:", error);
+      throw new Error("Failed to delete analytics events");
     } finally {
       isLoading.value = false;
     }

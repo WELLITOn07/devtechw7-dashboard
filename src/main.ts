@@ -7,20 +7,20 @@ import base64Input from "@/directives/base64Input";
 import "@/styles/main.scss";
 import { initializeApp } from "firebase/app";
 
-const app = createApp(App);
-
 const firebaseConfig = {
-  apiKey: "AIzaSyB-WJEa5EVU0Nlj1SyZWD0Qxf7wqqI_90M",
-  authDomain: "devtechw7-dash.firebaseapp.com",
-  projectId: "devtechw7-dash",
-  storageBucket: "devtechw7-dash.firebasestorage.app",
-  messagingSenderId: "245171211136",
-  appId: "1:245171211136:web:d559fde9994505b8a64f65",
+  apiKey: "AIzaSyBQZNSXX3AxT1y1l1QhwAm0QRV8QDtF_Vc",
+  authDomain: "devtechw7-dashboard.firebaseapp.com",
+  projectId: "devtechw7-dashboard",
+  storageBucket: "devtechw7-dashboard.appspot.com",
+  messagingSenderId: "1098366192965",
+  appId: "1:1098366192965:web:c7e5a9b8d1f5c6a2d0d0d0",
 };
 
-const appFirebase = initializeApp(firebaseConfig);
+// Initialize Firebase
+initializeApp(firebaseConfig);
 
-app
+// Create Vue app
+createApp(App)
   .use(router)
   .use(createPinia())
   .directive("mask", mask)

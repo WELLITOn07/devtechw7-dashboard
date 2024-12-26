@@ -34,7 +34,7 @@
 
     <AlertDialog
       v-if="showDialog"
-      :title="dialogTitle"
+      :title="dialogMessage"
       :message="dialogMessage"
       :visible="showDialog"
       @close="showDialog = false" />
@@ -42,68 +42,54 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import axios, { AxiosError } from "axios";
-import AlertDialog from "../components/AlertDialog.vue";
-import LoadingButton from "../components/LoadingButton.vue";
-import { LoginResponse } from "@/models/login-responde.model";
-import { setAuthToken, setUser } from "@/utils/get-auth-headers";
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import AlertDialog from "@/components/AlertDialog.vue";
+import LoadingButton from "@/components/LoadingButton.vue";
+
+interface LoginError {
+  code: string;
+  message: string;
+}
 
 export default defineComponent({
   name: "LoginView",
-  components: { AlertDialog, LoadingButton },
-  data() {
-    return {
-      email: "",
-      password: "",
-      loading: false,
-      showDialog: false,
-      dialogTitle: "",
-      dialogMessage: "",
-    };
+  components: {
+    AlertDialog,
+    LoadingButton,
   },
-  methods: {
-    async handleLogin() {
-      if (this.loading) return;
-      this.loading = true;
+  setup() {
+    const router = useRouter();
+    const email = ref("");
+    const password = ref("");
+    const loading = ref(false);
+    const showDialog = ref(false);
+    const dialogMessage = ref("");
 
+    const handleLogin = async () => {
+      loading.value = true;
       try {
-        const response = await axios.post<LoginResponse>(
-          `${process.env.VUE_APP_API_URL}/auth/login`,
-          {
-            email: this.email,
-            password: this.password,
-          }
-        );
-
-        const { access_token, user } = response.data;
-
-        setAuthToken(access_token);
-        setUser(user);
-
-        this.dialogTitle = "Success";
-        this.dialogMessage = `Welcome, ${user.name}!`;
-        this.showDialog = true;
-
-        setTimeout(() => {
-          this.$router.push("/");
-        }, 2000);
-      } catch (error: AxiosError | any) {
-        if (error.response) {
-          this.dialogTitle = "Login Error";
-          this.dialogMessage =
-            error.response?.data?.message ||
-            "Failed to login. Please try again.";
-        } else {
-          this.dialogTitle = "Unexpected Error";
-          this.dialogMessage =
-            "An unexpected error occurred. Please try again.";
-        }
-        this.showDialog = true;
+        const auth = getAuth();
+        await signInWithEmailAndPassword(auth, email.value, password.value);
+        router.push("/");
+      } catch (error) {
+        const loginError = error as LoginError;
+        dialogMessage.value = loginError.message;
+        showDialog.value = true;
       } finally {
-        this.loading = false;
+        loading.value = false;
       }
-    },
+    };
+
+    return {
+      email,
+      password,
+      loading,
+      showDialog,
+      dialogMessage,
+      handleLogin,
+    };
   },
 });
 </script>
