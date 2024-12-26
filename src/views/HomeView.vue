@@ -7,26 +7,30 @@
       </h1>
 
       <div class="features w7-space-between">
-        <div class="feature animate-up delay-2">
+        <router-link to="/courses" class="feature animate-up delay-2">
           <h2 class="roboto-medium">Cursos</h2>
           <p class="roboto-light">
             Gerencie seus cursos e conteúdos educacionais com facilidade.
           </p>
-        </div>
+        </router-link>
 
-        <div class="feature animate-up delay-3">
+        <router-link
+          to="/analytics-dashboard"
+          class="feature animate-up delay-3">
           <h2 class="roboto-medium">Analytics</h2>
           <p class="roboto-light">
             Acompanhe métricas e insights importantes do seu negócio.
           </p>
-        </div>
+        </router-link>
 
-        <div class="feature animate-up delay-4">
+        <router-link
+          to="/advertisement-central"
+          class="feature animate-up delay-4">
           <h2 class="roboto-medium">Propagandas</h2>
           <p class="roboto-light">
             Gerencie suas campanhas publicitárias de forma eficiente.
           </p>
-        </div>
+        </router-link>
       </div>
     </div>
   </div>
@@ -112,30 +116,27 @@ export default defineComponent({
 }
 
 .feature {
-  background: rgba($oxford-blue, 0.6);
-  padding: 3rem;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  opacity: 0;
-  border: 1px solid rgba($mikado-yellow, 0.1);
+  background-color: $yale-blue;
+  padding: 2rem;
+  border-radius: 1rem;
+  min-width: 280px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  color: inherit;
 
   &:hover {
     transform: translateY(-5px);
-    background: rgba($oxford-blue, 0.8);
-    border-color: rgba($mikado-yellow, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   }
 
   h2 {
     color: $mikado-yellow;
-    margin-bottom: 1.5rem;
-    font-size: 2rem;
+    margin-bottom: 1rem;
   }
 
   p {
     color: $white;
-    line-height: 1.8;
-    font-size: 1.2rem;
-    opacity: 0.9;
+    line-height: 1.5;
   }
 }
 
