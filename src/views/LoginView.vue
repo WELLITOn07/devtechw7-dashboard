@@ -71,7 +71,7 @@ export default defineComponent({
     const handleDialogClose = () => {
       showDialog.value = false;
       if (dialogType.value === "success") {
-        router.push("/");
+        router.push({ name: "home" });
       }
     };
 
