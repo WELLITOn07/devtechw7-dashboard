@@ -3,7 +3,7 @@ import { saveUsers, updateUser, deleteUser } from "@/services/UsersService";
 import { User } from "@/models/user.model";
 import UserForm from "@/components/devTechW7/UserForm.vue";
 
-jest.mock("@/services/usersService", () => ({
+jest.mock("@/services/UsersService", () => ({
   saveUsers: jest.fn(),
   updateUser: jest.fn(),
   deleteUser: jest.fn(),
