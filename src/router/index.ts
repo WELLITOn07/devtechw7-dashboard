@@ -39,9 +39,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(
-    process.env.NODE_ENV === "production" ? "/auth" : "/"
-  ),
+  history: createWebHistory("/"),
   routes,
 });
 
@@ -49,7 +47,6 @@ router.beforeEach((to, _, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = !!sessionStorage.getItem("access_token");
 
-  // Update auth store state to match sessionStorage
   if (isAuthenticated !== authStore.isAuthenticated) {
     authStore.setAuthenticated(isAuthenticated);
   }
