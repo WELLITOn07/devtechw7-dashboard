@@ -1,39 +1,44 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import HomeView from "../views/HomeView.vue";
+import LoginView from "../views/LoginView.vue";
+import CoursesView from "../views/CoursesView.vue";
+import AnalyticsDashboard from "../views/AnalyticsDashboard.vue";
+import AdvertisementCentralView from "../views/AdvertisementCentralView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "home",
-    component: () => import("@/views/HomeView.vue"),
+    component: HomeView,
     meta: { requiresAuth: true },
   },
   {
     path: "/login",
     name: "login",
-    component: () => import("@/views/LoginView.vue"),
+    component: LoginView,
   },
   {
-    path: "/manage/:name",
-    name: "manage-controllers",
-    component: () => import("@/views/ManageControllersView.vue"),
+    path: "/courses",
+    name: "courses",
+    component: CoursesView,
     meta: { requiresAuth: true },
   },
   {
-    path: "/analytics",
+    path: "/analytics-dashboard",
     name: "analytics-dashboard",
-    component: () => import("@/views/AnalyticsDashboard.vue"),
+    component: AnalyticsDashboard,
     meta: { requiresAuth: true },
   },
   {
-    path: "/advertisements",
+    path: "/advertisement-central",
     name: "advertisement-central",
-    component: () => import("@/views/AdvertisementCentralView.vue"),
+    component: AdvertisementCentralView,
     meta: { requiresAuth: true },
   },
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.VUE_APP_BASE_URL),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 

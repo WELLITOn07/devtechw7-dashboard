@@ -228,18 +228,12 @@ export default defineComponent({
   components: {
     LoadingDialog,
   },
-  props: {
-    formData: {
-      type: Array as () => Course[],
-      required: true,
-    },
-  },
-  emits: ["update:formData", "save"],
   data() {
     return {
-      existingCourseIds: new Set<string>() as Set<string>,
-      loading: false as boolean,
-      loadingMessage: "" as string,
+      existingCourseIds: new Set<string>(),
+      loading: false,
+      loadingMessage: "",
+      formData: [] as Course[],
     };
   },
   async mounted() {
@@ -267,20 +261,28 @@ export default defineComponent({
     async loadCourses() {
       try {
         const courses = await CourseService.fetchCourses();
-        const formattedCourses = (courses || []).map((course) => ({
+        if (!courses) {
+          this.formData = [];
+          return;
+        }
+
+        const formattedCourses = courses.map((course) => ({
           ...course,
           subjects: (course.subjects || []).map((subject) => ({
             ...subject,
             topicsString: subject.topics ? subject.topics.join(", ") : "",
           })),
         }));
-        this.$emit("update:formData", formattedCourses);
+
+        this.formData = formattedCourses;
         formattedCourses.forEach((course) => {
-          this.existingCourseIds.add(course.id);
+          if (course && course.id) {
+            this.existingCourseIds.add(course.id);
+          }
         });
       } catch (error) {
         console.error("Error loading courses:", error);
-        this.$emit("update:formData", []);
+        this.formData = [];
       }
     },
     async handleSaveAll() {
@@ -289,6 +291,11 @@ export default defineComponent({
       this.toggleLoading(true, "Saving courses...");
       try {
         for (const course of this.formData) {
+          if (!course.id) {
+            console.error("Course ID is required");
+            continue;
+          }
+
           const formattedCourse = {
             ...course,
             subjects: course.subjects.map((subject) => ({
@@ -299,23 +306,18 @@ export default defineComponent({
             })),
           };
 
-          if (this.existingCourseIds.has(course.id)) {
-            await CourseService.updateCourse(course.id, formattedCourse);
-          } else {
-            await CourseService.createCourse(formattedCourse);
-            this.existingCourseIds.add(course.id);
-          }
+          await CourseService.updateCourse(course.id, formattedCourse);
+          this.existingCourseIds.add(course.id);
         }
-        this.$emit("update:formData", this.formData);
-        this.$emit("save");
       } catch (error) {
         console.error("Error saving courses:", error);
       }
       this.toggleLoading(false);
     },
     addCourse() {
+      const timestamp = new Date().getTime();
       const newCourse: Course = {
-        id: "",
+        id: `course_${timestamp}`,
         title: "",
         description: "",
         cover: "",
@@ -325,7 +327,7 @@ export default defineComponent({
         subjects: [],
         works: [],
       };
-      this.$emit("update:formData", [...this.formData, newCourse]);
+      this.formData = [...this.formData, newCourse];
     },
     addSubject(courseIndex: number) {
       const updatedFormData = [...this.formData];
@@ -334,12 +336,12 @@ export default defineComponent({
         topics: [],
         topicsString: "",
       });
-      this.$emit("update:formData", updatedFormData);
+      this.formData = updatedFormData;
     },
     removeSubject(courseIndex: number, subjectIndex: number) {
       const updatedFormData = [...this.formData];
       updatedFormData[courseIndex].subjects.splice(subjectIndex, 1);
-      this.$emit("update:formData", updatedFormData);
+      this.formData = updatedFormData;
     },
     updateTopicsArray(subject: Subject) {
       if (subject.topicsString) {
@@ -354,12 +356,12 @@ export default defineComponent({
         title: "",
         url: "",
       });
-      this.$emit("update:formData", updatedFormData);
+      this.formData = updatedFormData;
     },
     removeWork(courseIndex: number, workIndex: number) {
       const updatedFormData = [...this.formData];
       updatedFormData[courseIndex].works.splice(workIndex, 1);
-      this.$emit("update:formData", updatedFormData);
+      this.formData = updatedFormData;
     },
     async removeCourse(courseId: string, courseIndex: number) {
       this.toggleLoading(true, "Deleting course...");
@@ -370,7 +372,7 @@ export default defineComponent({
         }
         const updatedFormData = [...this.formData];
         updatedFormData.splice(courseIndex, 1);
-        this.$emit("update:formData", updatedFormData);
+        this.formData = updatedFormData;
       } catch (error) {
         console.error("Error deleting course:", error);
       }
@@ -381,114 +383,115 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "@/styles/_variables.scss";
+@import "@/styles/_mixins.scss";
+
 .course-form {
-  background-color: var(--w7-background-color);
-  color: var(--w7-text-color);
   padding: 16px;
-}
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 
-.form {
-  &__title {
-    margin-bottom: 24px;
+  .form__title {
+    color: $white;
+    margin-bottom: 12px;
   }
 
-  &__section {
-    margin-bottom: 24px;
-    padding: 16px;
-    border: 1px solid var(--w7-border-color);
-    border-radius: 8px;
-  }
-
-  &__group {
-    margin-bottom: 16px;
-  }
-
-  &__label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-
-    &--text-danger {
-      color: var(--w7-error-color);
-    }
-
-    &__index {
-      margin-bottom: 16px;
-      font-weight: 500;
-    }
-  }
-
-  &__input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--w7-border-color);
-    border-radius: 4px;
-    font-size: 14px;
-
-    &:focus {
-      outline: none;
-      border-color: var(--w7-primary-color);
-    }
-
-    &:disabled {
-      background-color: var(--w7-disabled-color);
-      cursor: not-allowed;
-    }
-  }
-
-  &__textarea {
-    min-height: 100px;
-    resize: vertical;
-  }
-
-  &__button {
-    margin-top: 8px;
-  }
-
-  &__actions {
+  .form__section {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 24px;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid $yale-blue;
+    border-radius: 8px;
+    background-color: $black;
   }
-}
 
-.btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+  .form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-  &.btn-primary {
-    background-color: var(--w7-primary-color);
-    color: var(--w7-white);
+    .form__label {
+      font-size: 14px;
+      font-weight: bold;
+      color: $white;
 
-    &:hover {
-      background-color: var(--w7-primary-dark-color);
+      &__index {
+        color: $mikado-yellow;
+      }
+    }
+
+    .form__input {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid $yale-blue;
+      background-color: $black;
+      color: $white;
+
+      &.form__textarea {
+        height: 80px;
+        resize: none;
+      }
     }
   }
 
-  &.btn-secondary {
-    background-color: var(--w7-secondary-color);
+  .form__button {
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
 
-    &:hover {
-      background-color: var(--w7-secondary-dark-color);
+    &.btn-primary {
+      background-color: $primary;
+      color: $white;
+
+      &:hover {
+        background-color: darken($primary, 10%);
+      }
+    }
+
+    &.btn-success {
+      background-color: $success;
+      color: $white;
+
+      &:hover {
+        background-color: darken($success, 10%);
+      }
+    }
+
+    &.btn-danger {
+      background-color: $error;
+      color: $white;
+
+      &:hover {
+        background-color: darken($error, 10%);
+      }
     }
   }
 
-  &.btn-danger {
-    background-color: var(--w7-error-color);
-    color: var(--w7-white);
+  .form__actions {
+    @include flex(column, flex-start, center);
+    gap: 16px;
 
-    &:hover {
-      background-color: var(--w7-error-dark-color);
+    button {
+      width: 100%;
     }
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  // Grupos aninhados (subjects e works)
+  .form__group .form__group {
+    padding: 16px;
+    border: 1px solid $yale-blue;
+    border-radius: 8px;
+    background-color: $black;
+  }
+
+  // Mantendo o espaçamento entre botões em linha
+  .w7-column-space-between {
+    @include flex(column, flex-start, center);
+    gap: 16px;
+
+    button {
+      width: 100%;
+    }
   }
 }
 </style>

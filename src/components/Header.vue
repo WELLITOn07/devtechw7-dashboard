@@ -2,6 +2,7 @@
   <header class="app-header w7-space-between">
     <div class="app-header__left">
       <h1 class="app-title montserrat-bold w7-title">DevTechW7</h1>
+      <Navigation class="app-header__nav" />
     </div>
     <div class="app-header__right">
       <div class="user-info">
@@ -16,9 +17,13 @@
 import { defineComponent, ref, onMounted, computed } from "vue";
 import { User } from "@/models/user.model";
 import { getUser } from "@/utils/get-auth-headers";
+import Navigation from "@/components/Navigation.vue";
 
 export default defineComponent({
   name: "AppHeader",
+  components: {
+    Navigation,
+  },
   setup() {
     const user = ref<User | null>(null);
 
@@ -49,39 +54,43 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: $oxford-blue;
-  padding: 16px 32px;
-  color: $mikado-yellow;
+  padding: 1rem;
+  background-color: $black;
+  color: $white;
 
   &__left {
     display: flex;
     align-items: center;
+    gap: 2rem;
+  }
 
-    .app-title {
-      font-size: 24px;
-    }
+  &__nav {
+    margin-left: 2rem;
   }
 
   &__right {
     display: flex;
     align-items: center;
+  }
+}
 
-    .user-info {
-      text-align: right;
-      padding: 10px;
+.app-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
 
-      .user-name {
-        margin: 0;
-        font-size: 18px;
-        color: $white;
-      }
+.user-info {
+  text-align: right;
 
-      .user-roles {
-        margin: 0;
-        font-size: 14px;
-        color: $mikado-yellow;
-      }
-    }
+  .user-name {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .user-roles {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.8;
   }
 }
 </style>

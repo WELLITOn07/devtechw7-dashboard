@@ -140,6 +140,9 @@ export default defineComponent({
         application.allowedRoles = this.allowedRolesStrings[index]
           .split(",")
           .map((role) => role.trim());
+
+        // Remove o campo createdAt
+        delete application.createdAt;
       });
       this.$emit("save", this.formData);
     },

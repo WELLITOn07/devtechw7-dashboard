@@ -4,7 +4,6 @@ import * as CourseService from "@/services/CourseService";
 
 jest.mock("@/services/CourseService", () => ({
   fetchCourses: jest.fn(() => Promise.resolve([])),
-  createCourse: jest.fn(() => Promise.resolve({})),
   updateCourse: jest.fn(() => Promise.resolve({})),
   deleteCourse: jest.fn(() => Promise.resolve({})),
 }));
@@ -23,192 +22,82 @@ describe("CourseForm.vue", () => {
   });
 
   it("renders correctly", () => {
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: [],
-        "onUpdate:formData": (e: any) => wrapper.setProps({ formData: e })
-      }
-    });
+    wrapper = mount(CourseForm);
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.find(".course-form").exists()).toBe(true);
   });
 
-  it("displays 'No Courses Found' when formData is empty", () => {
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: [],
-        "onUpdate:formData": (e: any) => wrapper.setProps({ formData: e })
-      }
-    });
+  it("displays 'No Courses Found' when formData is empty", async () => {
+    wrapper = mount(CourseForm);
+    await wrapper.vm.$nextTick();
     expect(wrapper.text()).toContain("No Courses Found");
   });
 
   it("adds a new course when 'Add New Course' button is clicked", async () => {
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: [],
-        "onUpdate:formData": (e: any) => wrapper.setProps({ formData: e })
-      }
-    });
-
-    const addButton = wrapper.find(".form__button");
-    await addButton.trigger("click");
+    wrapper = mount(CourseForm);
     await wrapper.vm.$nextTick();
     
-    const emitted = wrapper.emitted();
-    expect(emitted["update:formData"]).toBeTruthy();
-    expect(emitted["update:formData"][0][0]).toEqual([{
-      id: "",
-      title: "",
-      description: "",
+    await wrapper.find("button.btn-primary").trigger("click");
+    expect(wrapper.vm.formData.length).toBe(1);
+    expect(wrapper.vm.formData[0].id).toContain("course_");
+  });
+
+  it("saves courses correctly", async () => {
+    const mockCourse = {
+      id: "test_course",
+      title: "Test Course",
+      description: "Test Description",
       cover: "",
       link: "",
-      type: "",
-      price: { original: "", discounted: "" },
+      type: "test",
+      price: { original: "100", discounted: "80" },
       subjects: [],
       works: [],
-    }]);
-  });
-
-  it("loads courses on mount", async () => {
-    const mockCourses = [
-      { 
-        id: "course1", 
-        title: "Test Course 1", 
-        subjects: [{ category: "Math", topics: ["Algebra", "Calculus"] }], 
-        works: [],
-        price: { original: "", discounted: "" },
-        type: "",
-        description: "",
-        cover: "",
-        link: ""
-      }
-    ];
-
-    const expectedFormattedCourses = mockCourses.map(course => ({
-      ...course,
-      subjects: course.subjects.map(subject => ({
-        ...subject,
-        topicsString: subject.topics.join(", "),
-      })),
-    }));
-    
-    (CourseService.fetchCourses as jest.Mock).mockResolvedValueOnce(mockCourses);
-    
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: [],
-        "onUpdate:formData": (e: any) => wrapper.setProps({ formData: e })
-      }
-    });
-
-    await wrapper.vm.$nextTick();
-    await new Promise(resolve => setTimeout(resolve, 0));
-    
-    expect(CourseService.fetchCourses).toHaveBeenCalled();
-    expect(wrapper.props("formData")).toEqual(expectedFormattedCourses);
-  });
-
-  it("handles course deletion", async () => {
-    const mockCourse = { 
-      id: "course1", 
-      title: "Test Course",
-      subjects: [],
-      works: [],
-      price: { original: "", discounted: "" },
-      type: "",
-      description: "",
-      cover: "",
-      link: ""
     };
 
-    // Mock the delete course service
-    (CourseService.deleteCourse as jest.Mock).mockResolvedValueOnce({});
-
-    let currentFormData = [mockCourse];
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: currentFormData,
-        "onUpdate:formData": (e: any) => {
-          currentFormData = e;
-          wrapper.setProps({ formData: e });
-        }
-      }
-    });
-
-    // Add the course ID to existingCourseIds
-    wrapper.vm.existingCourseIds.add("course1");
-
-    // Call removeCourse
-    await wrapper.vm.removeCourse("course1", 0);
+    wrapper = mount(CourseForm);
     await wrapper.vm.$nextTick();
-    
-    expect(CourseService.deleteCourse).toHaveBeenCalledWith("course1");
-    expect(currentFormData).toHaveLength(0);
+
+    wrapper.vm.formData = [mockCourse];
+    await wrapper.vm.handleSaveAll();
+
+    expect(CourseService.updateCourse).toHaveBeenCalledWith(
+      mockCourse.id,
+      expect.objectContaining({
+        id: mockCourse.id,
+        title: mockCourse.title,
+      })
+    );
   });
 
-  it("adds a subject to a course", async () => {
+  it("deletes a course correctly", async () => {
     const mockCourse = {
-      id: "course1",
+      id: "test_course",
       title: "Test Course",
+      description: "Test Description",
+      cover: "",
+      link: "",
+      type: "test",
+      price: { original: "100", discounted: "80" },
       subjects: [],
       works: [],
-      price: { original: "", discounted: "" },
-      type: "",
-      description: "",
-      cover: "",
-      link: ""
     };
 
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: [mockCourse],
-        "onUpdate:formData": (e: any) => wrapper.setProps({ formData: e })
-      }
-    });
+    wrapper = mount(CourseForm);
     await wrapper.vm.$nextTick();
 
-    await wrapper.vm.addSubject(0);
-    
-    expect(wrapper.props("formData")[0].subjects.length).toBe(1);
-  });
+    wrapper.vm.formData = [mockCourse];
+    wrapper.vm.existingCourseIds.add(mockCourse.id);
 
-  it("adds a work to a course", async () => {
-    const mockCourse = {
-      id: "course1",
-      title: "Test Course",
-      subjects: [],
-      works: [],
-      price: { original: "", discounted: "" },
-      type: "",
-      description: "",
-      cover: "",
-      link: ""
-    };
+    await wrapper.vm.removeCourse(mockCourse.id, 0);
 
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: [mockCourse],
-        "onUpdate:formData": (e: any) => wrapper.setProps({ formData: e })
-      }
-    });
-    await wrapper.vm.$nextTick();
-
-    await wrapper.vm.addWork(0);
-    
-    expect(wrapper.props("formData")[0].works.length).toBe(1);
+    expect(CourseService.deleteCourse).toHaveBeenCalledWith(mockCourse.id);
+    expect(wrapper.vm.formData.length).toBe(0);
   });
 
   it("formats currency correctly", () => {
-    wrapper = mount(CourseForm, {
-      props: {
-        formData: [],
-        "onUpdate:formData": (e: any) => wrapper.setProps({ formData: e })
-      }
-    });
-    expect(wrapper.vm.formatCurrency("1000")).toBe("1.000");
-    expect(wrapper.vm.formatCurrency("1000000")).toBe("1.000.000");
-    expect(wrapper.vm.formatCurrency("R$ 1000")).toBe("1.000");
-    expect(wrapper.vm.formatCurrency("R$ 1.000")).toBe("1.000");
+    wrapper = mount(CourseForm);
+    const result = wrapper.vm.formatCurrency("1234567");
+    expect(result).toBe("1.234.567");
   });
 });

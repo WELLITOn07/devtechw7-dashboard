@@ -10,15 +10,6 @@ export async function fetchCourses(): Promise<Course[]> {
   return response.data.data || [];
 }
 
-export async function createCourse(course: Course): Promise<Course> {
-  const response = await axios.post(
-    `${process.env.VUE_APP_API_URL}/courses`,
-    course,
-    getAuthHeaders()
-  );
-  return response.data.data;
-}
-
 export async function updateCourse(
   courseId: string,
   course: Course

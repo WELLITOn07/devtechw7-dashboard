@@ -1,60 +1,228 @@
 <template>
   <div class="home">
     <AppHeader />
-    <h1 class="montserrat-bold w7-title w7-margin">Applications Dashboard</h1>
-    <ApplicationList />
-    <AnalyticsDashboard />
-    <div class="advertisement__container" @click="goToAdvertisementCentral">
-      <h2>Central de Propagandas</h2>
-      <p>Gerencie suas propagandas e campanhas com facilidade.</p>
+    <div class="content w7-margin">
+      <h1 class="title">
+        <span class="animate-text montserrat-bold">DevTechW7</span>
+        <span class="animate-text delay-1 montserrat-bold">Dashboard</span>
+      </h1>
+      
+      <div class="features w7-space-between">
+        <div class="feature animate-up delay-2">
+          <h2 class="roboto-medium">Cursos</h2>
+          <p class="roboto-light">Gerencie seus cursos e conteúdos educacionais com facilidade.</p>
+        </div>
+        
+        <div class="feature animate-up delay-3">
+          <h2 class="roboto-medium">Analytics</h2>
+          <p class="roboto-light">Acompanhe métricas e insights importantes do seu negócio.</p>
+        </div>
+        
+        <div class="feature animate-up delay-4">
+          <h2 class="roboto-medium">Propagandas</h2>
+          <p class="roboto-light">Gerencie suas campanhas publicitárias de forma eficiente.</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ApplicationList from "@/components/ApplicationList.vue";
-import AnalyticsDashboard from "@/views/AnalyticsDashboard.vue";
 import AppHeader from "@/components/Header.vue";
 
 export default defineComponent({
   name: "HomeView",
-  components: { ApplicationList, AnalyticsDashboard, AppHeader },
-  methods: {
-    goToAdvertisementCentral() {
-      this.$router.push({ name: "advertisement-central" });
-    },
-  },
+  components: { AppHeader },
 });
 </script>
 
 <style scoped lang="scss">
 @import "@/styles/_variables.scss";
 
-.home {
-  padding: 16px;
-  background-color: $black;
-  color: $white;
-  min-height: 100vh;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.advertisement__container {
-  background-color: #001d3d;
-  color: #ffc300;
-  padding: 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin-top: 24px;
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+.home {
+  min-height: 100vh;
+  background-color: $oxford-blue;
+  color: $white;
+}
+
+.content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 6rem;
+  font-size: 4.5rem;
+  color: $mikado-yellow;
+  
+  .animate-text {
+    display: inline-block;
+    animation: slideIn 0.8s ease forwards;
+    opacity: 0;
+    
+    &.delay-1 {
+      animation-delay: 0.3s;
+      margin-left: 1.5rem;
+    }
+  }
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+  margin-top: 4rem;
+}
+
+.feature {
+  background: rgba($oxford-blue, 0.6);
+  padding: 3rem;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+  opacity: 0;
+  border: 1px solid rgba($mikado-yellow, 0.1);
+  
+  &:hover {
+    transform: translateY(-5px);
+    background: rgba($oxford-blue, 0.8);
+    border-color: rgba($mikado-yellow, 0.3);
+  }
+  
   h2 {
-    font-size: 1.5rem;
-    margin-bottom: 8px;
+    color: $mikado-yellow;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+  }
+  
+  p {
+    color: $white;
+    line-height: 1.8;
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+}
+
+.animate-up {
+  animation: fadeUp 0.8s ease forwards;
+  
+  &.delay-2 {
+    animation-delay: 0.6s;
+  }
+  
+  &.delay-3 {
+    animation-delay: 0.9s;
+  }
+  
+  &.delay-4 {
+    animation-delay: 1.2s;
+  }
+}
+
+// Desktop grande (1440px e acima)
+@media (min-width: 1440px) {
+  .content {
+    max-width: 1600px;
+    padding: 8rem 4rem;
   }
 
-  p {
-    font-size: 1rem;
-    color: $white;
+  .title {
+    font-size: 5.5rem;
+  }
+
+  .feature {
+    padding: 4rem;
+    
+    h2 {
+      font-size: 2.5rem;
+    }
+    
+    p {
+      font-size: 1.4rem;
+    }
+  }
+}
+
+// Tablet (768px a 1024px)
+@media (max-width: 1024px) {
+  .title {
+    font-size: 3.5rem;
+  }
+  
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  
+  .feature {
+    padding: 2rem;
+    
+    h2 {
+      font-size: 1.8rem;
+    }
+    
+    p {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Mobile (até 767px)
+@media (max-width: 767px) {
+  .content {
+    padding: 4rem 1rem;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    
+    .animate-text.delay-1 {
+      margin-left: 0.8rem;
+    }
+  }
+  
+  .features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .feature {
+    padding: 1.5rem;
+    
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
   }
 }
 </style>
