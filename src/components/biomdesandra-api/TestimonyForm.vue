@@ -89,6 +89,19 @@
       </div>
     </div>
   </form>
+
+  <ConfirmationDialog
+    v-if="showConfirmationDialog"
+    :visible="true"
+    :message="'Are you sure you want to remove this testimony?'"
+    @confirm="confirmRemove"
+    @cancel="showConfirmationDialog = false" />
+  <AlertDialog
+    v-if="showAlertDialog"
+    :visible="true"
+    :title="alertTitle"
+    :message="alertMessage"
+    @close="closeAlertDialog" />
 </template>
 
 <script lang="ts">
@@ -100,13 +113,24 @@ import {
   updateTestimony,
   deleteTestimony,
 } from "@/services/TestimonyService";
+import ConfirmationDialog from "@/components/ConfirmationDialog.vue";
+import AlertDialog from "@/components/AlertDialog.vue";
 
 export default defineComponent({
   name: "TestimonyForm",
+  components: {
+    ConfirmationDialog,
+    AlertDialog,
+  },
   data() {
     return {
       formData: [] as Testimony[],
       loading: false,
+      showConfirmationDialog: false,
+      showAlertDialog: false,
+      alertMessage: "",
+      alertTitle: "",
+      testimonyToRemove: null as { testimony: Testimony; index: number } | null,
     };
   },
   async mounted() {
@@ -150,7 +174,9 @@ export default defineComponent({
         await Promise.all(promises);
 
         await this.loadTestimonies();
-        alert("All testimonies saved successfully!");
+        this.showAlertDialog = true;
+        this.alertMessage = "All testimonies saved successfully!";
+        this.alertTitle = "Success";
       } catch (error) {
         console.error("Error saving testimonies:", error);
       }
@@ -166,14 +192,33 @@ export default defineComponent({
     },
 
     async removeTestimony(testimony: Testimony, index: number) {
+      this.showConfirmationDialog = true;
+      this.testimonyToRemove = { testimony, index } as {
+        testimony: Testimony;
+        index: number;
+      } | null;
+    },
+
+    async confirmRemove() {
+      const { testimony, index } = this.testimonyToRemove!;
       try {
         if (testimony.id) {
           await deleteTestimony(testimony.id);
         }
         this.formData.splice(index, 1);
+        this.showAlertDialog = true;
+        this.alertMessage = "Testimony deleted successfully!";
+        this.alertTitle = "Success";
       } catch (error) {
         console.error("Error deleting testimony:", error);
+        this.showAlertDialog = true;
+        this.alertMessage = "Failed to delete testimony.";
+        this.alertTitle = "Error";
       }
+      this.showConfirmationDialog = false;
+    },
+    closeAlertDialog() {
+      this.showAlertDialog = false;
     },
 
     validateTestimony(testimony: Testimony): boolean {
