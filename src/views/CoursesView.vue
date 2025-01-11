@@ -4,6 +4,7 @@
     <div class="content w7-margin">
       <h1 class="w7-title montserrat-bold">Gerenciar Cursos</h1>
       <CourseForm />
+      <TestimonyForm />
     </div>
   </div>
 </template>
@@ -11,11 +12,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CourseForm from "@/components/biomdesandra-api/CourseForm.vue";
+import TestimonyForm from "@/components/biomdesandra-api/TestimonyForm.vue";
 
 export default defineComponent({
   name: "CoursesView",
   components: {
     CourseForm,
+    TestimonyForm,
   },
 });
 </script>
