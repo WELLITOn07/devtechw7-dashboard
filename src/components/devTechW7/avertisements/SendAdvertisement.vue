@@ -9,7 +9,11 @@
       <label class="form__label">Select Application</label>
       <div class="application-list">
         <div v-for="app in applications" :key="app.id" class="application-item">
-          <input type="radio" :id="'app-' + app.id" v-model="selectedApplication" :value="app.id" />
+          <input
+            type="radio"
+            :id="'app-' + app.id"
+            v-model="selectedApplication"
+            :value="app.id" />
           <label :for="'app-' + app.id">{{ app.name }}</label>
         </div>
       </div>
@@ -17,16 +21,25 @@
 
     <!-- Send to All Applications -->
     <div class="form__group">
-      <LoadingButton :loading="loadingAll" text="Send to Selected Application" loadingText="Sending..."
+      <LoadingButton
+        :loading="loadingAll"
+        text="Send to Selected Application"
+        loadingText="Sending..."
         @click="sendToAll" />
     </div>
 
     <!-- Send to Single Recipient -->
     <div class="form__group">
       <label class="form__label">Send to Single Recipient</label>
-      <input type="email" v-model="singleRecipient" class="form__input email-input"
+      <input
+        type="email"
+        v-model="singleRecipient"
+        class="form__input email-input"
         placeholder="Enter recipient email" />
-      <LoadingButton :loading="loadingSingle" text="Send to Single Recipient" loadingText="Sending..."
+      <LoadingButton
+        :loading="loadingSingle"
+        text="Send to Single Recipient"
+        loadingText="Sending..."
         @click="sendToSingle" />
     </div>
 
@@ -37,11 +50,20 @@
     <LoadingDialog :visible="isLoading" :message="loadingMessage" />
 
     <!-- Confirmation Dialog -->
-    <ConfirmationDialog v-if="showConfirm" :visible="showConfirm" title="Send Advertisement"
-      message="Are you sure you want to send this advertisement?" @confirm="confirmSend" @cancel="cancelSend" />
+    <ConfirmationDialog
+      v-if="showConfirm"
+      :visible="showConfirm"
+      title="Send Advertisement"
+      message="Are you sure you want to send this advertisement?"
+      @confirm="confirmSend"
+      @cancel="cancelSend" />
 
     <!-- Error Dialog -->
-    <AlertDialog v-if="showDialog" :title="dialogTitle" :message="dialogMessage" :visible="showDialog"
+    <AlertDialog
+      v-if="showDialog"
+      :title="dialogTitle"
+      :message="dialogMessage"
+      :visible="showDialog"
       @close="showDialog = false" />
   </div>
 </template>
