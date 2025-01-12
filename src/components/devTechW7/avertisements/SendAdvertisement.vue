@@ -4,6 +4,8 @@
       Send Advertisement
     </h3>
 
+    <EmailSubscription />
+
     <!-- Application Selection -->
     <div class="form__group">
       <label class="form__label">Select Application</label>
@@ -75,6 +77,7 @@ import LoadingButton from "@/components/LoadingButton.vue";
 import LoadingDialog from "@/components/LoadingDialog.vue";
 import ConfirmationDialog from "@/components/ConfirmationDialog.vue";
 import AlertDialog from "@/components/AlertDialog.vue";
+import EmailSubscription from "@/components/EmailSubscription.vue"; // Import the EmailSubscription component
 import { defineComponent, ref, onMounted } from "vue";
 import { Application } from "@/models/application.model";
 
@@ -85,6 +88,7 @@ export default defineComponent({
     LoadingDialog,
     ConfirmationDialog,
     AlertDialog,
+    EmailSubscription, // Register the EmailSubscription component
   },
   props: {
     advertisementId: {
