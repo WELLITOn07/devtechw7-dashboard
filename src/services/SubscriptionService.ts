@@ -15,7 +15,7 @@ export const createSubscription = async (subscription: Subscription) => {
   } catch (error: any) {
     throw new Error(
       error.response ? error.response.data.message : "Unknown error"
-    );  
+    );
   }
 };
 
@@ -29,7 +29,7 @@ export const fetchSubscriptions = async () => {
   } catch (error: any) {
     throw new Error(
       error.response ? error.response.data.message : "Unknown error"
-    );  
+    );
   }
 };
 
@@ -39,7 +39,7 @@ export const deleteSubscription = async (id: number) => {
   } catch (error: any) {
     throw new Error(
       error.response ? error.response.data.message : "Unknown error"
-    );  
+    );
   }
 };
 
@@ -54,6 +54,6 @@ export const updateSubscription = async (id: number, data: Subscription) => {
   } catch (error: any) {
     throw new Error(
       error.response ? error.response.data.message : "Unknown error"
-    );  
+    );
   }
 };
