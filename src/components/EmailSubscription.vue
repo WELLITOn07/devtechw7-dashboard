@@ -73,6 +73,11 @@
           </td>
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">Total de emails obtidos: {{ totalEmails }}</td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </template>
@@ -103,6 +108,7 @@ export default {
       alertTitle: "",
       showAlert: false,
       subscriptions: [],
+      totalEmails: 0,
     };
   },
   computed: {
@@ -120,13 +126,11 @@ export default {
     },
   },
   methods: {
-    // Limpa os campos de entrada
     clearInputs() {
       this.emailInput = "";
       this.selectedApplication = null;
     },
 
-    // Assina os emails com a aplicação selecionada
     async subscribeEmails() {
       if (!this.parsedEmails.length) {
         this.showAlertMessage("Error", "No emails to subscribe!");
@@ -151,6 +155,7 @@ export default {
         }
         this.showAlertMessage("Success", "All emails subscribed successfully!");
         await this.fetchExistingSubscriptions();
+        this.updateEmailCount(this.subscriptions.length);
       } catch (error) {
         this.showAlertMessage("Error", error.message);
       } finally {
@@ -159,12 +164,12 @@ export default {
       }
     },
 
-    // Busca assinaturas existentes
     async fetchExistingSubscriptions() {
       this.toggleLoading(true);
 
       try {
         this.subscriptions = await fetchSubscriptions();
+        this.updateEmailCount(this.subscriptions.length);
       } catch (error) {
         this.alertMessage = `Failed to load subscriptions: ${error.message}`;
       } finally {
@@ -202,6 +207,10 @@ export default {
       this.loading = state;
       this.loadingMessage = message;
     },
+
+    updateEmailCount(newCount) {
+      this.totalEmails = newCount;
+    },
   },
 
   mounted() {
@@ -226,6 +235,8 @@ export default {
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  background: $oxford-blue;
+  color: $white;
 }
 
 .form__select {
@@ -234,6 +245,8 @@ export default {
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  background: $oxford-blue;
+  color: $white;  
 }
 
 .email-actions {
@@ -275,14 +288,25 @@ export default {
   thead {
     position: sticky;
     top: 0;
-    background-color: $oxford-blue; // Cor de fundo do cabeçalho
+    background-color: $oxford-blue;
     z-index: 10;
+  }
+
+  tfoot {
+    background-color: $oxford-blue;
+
+    td {
+      font-size: 16px;
+      font-weight: bold;
+      padding: 10px;
+      text-align: center;
+    }
   }
 
   th,
   td {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid $white;
     text-align: left;
   }
 
@@ -293,20 +317,21 @@ export default {
     width: 100%;
 
     &::-webkit-scrollbar {
-      width: 12px; /* Width of the scrollbar */
+      width: 12px;
+      height: 12px;
     }
 
     &::-webkit-scrollbar-track {
-      background: #f1f1f1; /* Background of the scrollbar track */
+      background: $white; 
     }
 
     &::-webkit-scrollbar-thumb {
-      background: #888; /* Color of the scrollbar thumb */
-      border-radius: 6px; /* Rounded corners for the thumb */
+      background: $secondary; 
+      border-radius: 6px; 
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: #555; /* Darker color on hover */
+      background: $secondary; 
     }
   }
 
@@ -324,9 +349,10 @@ export default {
   z-index: 10;
 }
 
-.subscriptions-table th, .subscriptions-table td {
+.subscriptions-table th,
+.subscriptions-table td {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid $white;
 }
 
 .subscriptions-table tbody {
