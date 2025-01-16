@@ -529,7 +529,7 @@ export default defineComponent({
     },
 
     isPanelOpen(courseIndex: number, panel: string): boolean {
-      return this.panelStates[courseIndex]?.[panel] ?? true;
+      return this.panelStates[courseIndex]?.[panel] ?? false;
     },
 
     togglePreview(courseIndex: number) {
@@ -667,10 +667,10 @@ export default defineComponent({
 
       // Open all panels for the new course
       this.panelStates[courseIndex] = {
-        basic: true,
-        price: true,
-        subjects: true,
-        works: true,
+        basic: false,
+        price: false,
+        subjects: false,
+        works: false,
       };
     },
 
