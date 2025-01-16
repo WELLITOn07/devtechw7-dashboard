@@ -179,6 +179,53 @@
           </div>
         </div>
 
+        <!-- Installments Section -->
+        <div class="form__panel">
+          <div
+            class="form__panel-header"
+            @click="togglePanel(courseIndex, 'installments')">
+            <h4>Installments</h4>
+            <span>
+              {{ isPanelOpen(courseIndex, "installments") ? "▼" : "▶" }}
+            </span>
+          </div>
+          <div
+            v-show="isPanelOpen(courseIndex, 'installments')"
+            class="form__panel-content">
+            <div class="form__group">
+              <label
+                :for="'installments-count-' + courseIndex"
+                class="form__label">
+                Installments Count
+                <span class="required">*</span>
+              </label>
+              <input
+                v-model="course.installmentsCount"
+                :id="'installments-count-' + courseIndex"
+                type="number"
+                class="form__input"
+                placeholder="Enter installments count"
+                required />
+            </div>
+            <div class="form__group">
+              <label
+                :for="'installments-value-' + courseIndex"
+                class="form__label">
+                Installments Value
+                <span class="required">*</span>
+              </label>
+              <input
+                v-model="course.installmentsValue"
+                :id="'installments-value-' + courseIndex"
+                type="text"
+                class="form__input"
+                placeholder="R$ 0,00"
+                required
+                @input="formatInstallmentsValue(course.installmentsValue)" />
+            </div>
+          </div>
+        </div>
+
         <!-- Subjects Section -->
         <div class="form__panel">
           <div
@@ -469,6 +516,10 @@ export default defineComponent({
       }
     },
 
+    formatInstallmentsValue(value: string) {
+      return `R$ ${value.replace(".", ",")}`;
+    },
+
     togglePanel(courseIndex: number, panel: string) {
       if (!this.panelStates[courseIndex]) {
         this.panelStates[courseIndex] = {};
@@ -605,6 +656,8 @@ export default defineComponent({
           original: "",
           discounted: "",
         },
+        installmentsCount: 0,
+        installmentsValue: "",
         subjects: [],
         works: [],
       };

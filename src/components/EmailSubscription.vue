@@ -246,7 +246,7 @@ export default {
   border-radius: 4px;
   border: 1px solid #ccc;
   background: $oxford-blue;
-  color: $white;  
+  color: $white;
 }
 
 .email-actions {
@@ -322,16 +322,16 @@ export default {
     }
 
     &::-webkit-scrollbar-track {
-      background: $white; 
+      background: $white;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $secondary; 
-      border-radius: 6px; 
+      background: $secondary;
+      border-radius: 6px;
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: $secondary; 
+      background: $secondary;
     }
   }
 
