@@ -26,5 +26,7 @@ export interface Course {
   price: Price;
   subjects: Subject[];
   works: Work[];
+  installmentsCount: number;
+  installmentsValue: string;
   showPreview?: boolean;
 }
