@@ -1,4 +1,3 @@
-/************* ✨ Codeium Command 🌟 *************/
 <template>
   <form @submit.prevent="onSubmit" class="advertisement-form w7-padding">
     <h3 class="form__title w7-subtitle montserrat-medium">
@@ -20,6 +19,7 @@
       <textarea
         id="description"
         v-model="localFormData.description"
+        @blur="normalizeDescription"
         class="form__input form__textarea"
         placeholder="Enter advertisement description"></textarea>
     </div>
@@ -103,6 +103,10 @@ export default defineComponent({
       emit("preview", { ...localFormData.value });
     };
 
+    const normalizeDescription = () => {
+      localFormData.value.description = localFormData.value.description.trim();
+    };
+
     watch(
       () => props.formData,
       (newValue) => {
@@ -117,7 +121,7 @@ export default defineComponent({
       { deep: true }
     );
 
-    return { localFormData, onSubmit, onPreview };
+    return { localFormData, onSubmit, onPreview, normalizeDescription };
   },
 });
 </script>
@@ -185,6 +189,11 @@ export default defineComponent({
     }
   }
 
+  #description {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
   .form__actions {
     display: flex;
     justify-content: space-between;
@@ -219,5 +228,3 @@ export default defineComponent({
   }
 }
 </style>
-
-/****** be990643-7c4b-4cb4-9e4e-bcf74bec9a61 *******/
