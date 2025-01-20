@@ -36,18 +36,13 @@
     </div>
 
     <div class="form__group">
-      <label for="image" class="form__label">Image (Base64)</label>
+      <label for="image" class="form__label">Image Link</label>
       <textarea
         id="image"
         v-model="localFormData.image"
-        v-base64-input
         class="form__input form__textarea"
-        placeholder="Paste base64 image here"></textarea>
+        placeholder="Paste link to the image here"></textarea>
     </div>
-
-    <a href="https://www.base64-image.de/" target="_blank" class="link-encode">
-      Encode Image
-    </a>
 
     <div class="form__actions w7-space-between">
       <button type="submit" class="form__button btn btn-success">
@@ -66,13 +61,9 @@
 <script lang="ts">
 import { defineComponent, PropType, ref, watch } from "vue";
 import { Advertisement } from "@/models/advertisement.model";
-import { vBase64Input } from "@/directives/base64-input";
 
 export default defineComponent({
   name: "AdvertisementForm",
-  directives: {
-    base64Input: vBase64Input,
-  },
   props: {
     formData: {
       type: Object as PropType<Advertisement | null>,
