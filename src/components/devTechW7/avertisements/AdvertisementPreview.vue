@@ -2,13 +2,13 @@
   <div class="preview-container">
     <div class="preview">
       <h1 class="preview-title">{{ ad.title }}</h1>
-      <p class="preview-description">{{ ad.description }}</p>
+      <p class="description">{{ ad.description }}</p>
       <p>Confira mais detalhes acessando o link abaixo:</p>
       <a class="cta-button" :href="ad.link" target="_blank">Ver Oferta</a>
 
       <img
         v-if="ad.image"
-        :src="`data:image/jpeg;base64,${ad.image}`"
+        :src="`${ad.image}`"
         alt="Propaganda"
         class="preview-image" />
 
@@ -63,9 +63,9 @@ export default defineComponent({
     margin-bottom: 16px;
   }
 
-  .preview-description {
-    font-size: 16px;
-    line-height: 1.6;
+  .description {
+    white-space: pre-wrap;
+    word-wrap: break-word;
     margin-bottom: 16px;
   }
 
